@@ -13,8 +13,19 @@
     <link rel="stylesheet" href="normalize.css">
 </head>
 <body>
-    <ul></ul>
-    
+    <form action="">
+        <label for="choice">Search by:</label>
+        <select name="choice" id="choice">
+            <option value="author">Author</option>
+            <option value="title">Title</option>
+        </select>
+        <input id="search" type="text">
+        <button id="btn-search">Search</button>
+    </form>
+    <ol></ol>
+    <button id="prev">Previous</button>
+    <span id="pages"></span>
+    <button id="next">Next</button>
     <script src="main.js"></script>
 </body>
 </html>

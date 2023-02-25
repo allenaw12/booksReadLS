@@ -4,18 +4,27 @@
 document.querySelector('form').addEventListener('submit', getBooks)
     
 
-function getBooks(e, start = 0){
+function getBooks(e, start = 0, max = 10){
     e ? e.preventDefault() : null
     let input = document.querySelector('#search').value
     let filter = document.querySelector('#choice').value 
-    console.log(input, ',', filter, ',', start)
+    //console.log(input, ',', filter, ',', start)
     document.querySelectorAll('li').forEach(el => el.remove())
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=in${filter}:${input}&startIndex=${start}&maxResults=10&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`)
+    document.querySelectorAll('a').forEach(el => el.remove())
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=in${filter}:${input}&startIndex=${start}&maxResults=${max}&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`)
         .then(res => res.json())
         .then(data => {
             let total = data.totalItems
-            console.log(data, total)
+            console.log(data)
             data.items.forEach((obj,i)=> {
+                console.log('title: ', obj.volumeInfo.title, ',\n',
+                            'subtitle: ', obj.volumeInfo?.subtitle, ',\n',
+                            'authors: ',obj.volumeInfo.authors?.join(', '), ',\n',
+                             'categories: ',obj.volumeInfo.categories?.join(', '), ',\n',
+                             'description: ', obj.volumeInfo.description || obj.searchInfo?.textSnippet || null, ',\n',
+                             'google book listing: ',`https://books.google.com/books?id=${obj.id}`, ',\n',
+                             'pages: ', obj.volumeInfo?.pageCount, ',\n',
+                             obj.volumeInfo)
                 let img = document.createElement('img')
                 let li = document.createElement('li')
                 if(i==0){
@@ -41,13 +50,13 @@ function getBooks(e, start = 0){
 
 document.querySelector('#next').addEventListener('click',next)
 function next(e){
-    e ? e.preventDefault() : null
+    e ? e.preventDefault : null
     let start = +document.querySelector('.counter').value
     return getBooks(null, start+9)
 }
 document.querySelector('#prev').addEventListener('click',previous)
 function previous(e){
-    e ? e.preventDefault() : null
+    e ? e.preventDefault : null
     let start = +document.querySelector('.counter').value
     return getBooks(null, start-11)
 }

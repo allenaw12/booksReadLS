@@ -8,16 +8,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Books, off the TBR pile!</title>
-    
-    <link rel="stylesheet" href="style.css">
+
     <link rel="stylesheet" href="normalize.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <form action="">
+        <span>Note: if searching by both author and title, please type author first, title second, separated by a comma. ex: Michael Crichton, Jurassic Park</span>
         <label for="choice">Search by:</label>
         <select name="choice" id="choice">
             <option value="author">Author</option>
             <option value="title">Title</option>
+            <option value="author-title">Author and Title</option>
         </select>
         <input id="search" type="text">
         <button id="btn-search">Search</button>

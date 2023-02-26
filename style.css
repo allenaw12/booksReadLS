@@ -1,0 +1,16 @@
+body {
+    font-size: 1.6rem;
+}
+
+span {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.thumbnail {
+    max-width: 100%;
+    max-height: 20rem;
+    
+    /* width: auto; */
+    padding: .5rem;
+}

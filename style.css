@@ -14,3 +14,20 @@ span {
     /* width: auto; */
     padding: .5rem;
 }
+
+.page-container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    gap: .5rem;
+}
+#prev, #next {
+    align-self: center;
+}
+
+#pages {
+    display: flex;
+    flex-flow: row wrap;
+    gap: .5rem;
+    justify-content: center;
+}

@@ -40,10 +40,11 @@ function getBooks(e, start = 0, max = 10){
                     li.classList.add('counter')
                     li.value = start+1
                 }
+                title.classList.add('descriptor')
                 img.classList.add('thumbnail')
                 img.src= obj.volumeInfo.imageLinks?.smallThumbnail || obj.volumeInfo.imageLinks?.thumbnail || 'NoBookCover.png'
                 li.appendChild(img)
-                title.innerText = 'Title: ' + obj.volumeInfo.title + (obj.volumeInfo.subtitle ? ': ' + obj.volumeInfo.subtitle : '')
+                title.innerText = `Title: ${obj.volumeInfo.title}${obj.volumeInfo.subtitle ? `: ${obj.volumeInfo.subtitle}` : ''}`
                 li.appendChild(title)
                 document.querySelector('ol').appendChild(li)})
             let pageLinks = 1

@@ -19,16 +19,18 @@
         <span>Note: if searching by both author and title, please type author first, title second, separated by a comma. ex: Michael Crichton, Jurassic Park</span>
         <label for="choice">Search by:</label>
         <select name="choice" id="choice">
-            <option value="author">Author</option>
-            <option value="title">Title</option>
-            <option value="author-title">Author and Title</option>
+            <option value="inauthor">Author</option>
+            <option value="intitle">Title</option>
+            <option value="inauthor-title">Author and Title</option>
+            <option value="isbn">ISBN</option>
         </select>
         <input id="search" type="text">
         <button id="btn-search">Search</button>
     </form>
     <section class="results">
-        <i class="fa-regular fa-heart"></i>
-        <i class="fa-regular fa-bookmark"></i>
+        <span id="error"></span>
+        <span class="read fa-regular fa-heart"></span>
+        <span class="tbr fa-regular fa-bookmark"></span>
         <ol class="books"></ol>
     </section>
     <nav class="page-container">

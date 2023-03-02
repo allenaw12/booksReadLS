@@ -35,6 +35,9 @@ function getBooks(e, start = 0, max = 10){
                 //             'google book listing: ',`https://books.google.com/books?id=${obj.id}`, ',\n',
                 //             'pages: ', obj.volumeInfo?.pageCount, ',\n',
                 //              obj.volumeInfo)
+                let local = document.createElement('span')
+                let read = document.createElement('span')
+                let tbr = document.createElement('span')
                 let link = document.createElement('a')
                 let img = document.createElement('img')
                 let li = document.createElement('li')
@@ -48,6 +51,16 @@ function getBooks(e, start = 0, max = 10){
                     li.classList.add('counter')
                     li.value = start+1
                 }
+                let readClasses = `id${obj.id}` + ' read fa-regular fa-heart'
+                let tbrClasses = `id${obj.id}` + ' tbr fa-regular fa-bookmark'
+                readClasses.split(' ').forEach(el => read.classList.add(el))
+                tbrClasses.split(' ').forEach(el =>tbr.classList.add(el))
+                li.classList.add(`id${obj.id}`)
+                console.log(`id${obj.id}`)
+                // title.classList.add(obj.id)
+                local.appendChild(read)
+                local.appendChild(tbr)
+                li.appendChild(local)
                 link.href = `https://books.google.com/books?id=${obj.id}`
                 link.target = '_blank'
                 art.classList.add('information')
@@ -70,6 +83,14 @@ function getBooks(e, start = 0, max = 10){
                 }
                 li.appendChild(art)
                 document.querySelector('ol').appendChild(li)})
+            document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
+                let first  = li.attributes[0].value.split(' ')
+                let string = JSON.stringify(document.querySelector(`li.${first[0]}`).outerHTML)
+                document.querySelector('#error').innerHTML = JSON.parse(string)
+                console.log(document.querySelector(`li.${first[0]}`),  'read one')}))
+            document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
+                let first  = li.attributes[0].value.split(' ')
+                console.log(document.querySelector(`li.${first[0]}`), 'want to read one' )}))
             let pageLinks = 1
             for(i=0;i<total;i+=10){
                 let a = document.createElement('a')
@@ -88,6 +109,7 @@ function next(e){
     let start = +document.querySelector('.counter').value
     return getBooks(null, start+9)
 }
+
 document.querySelector('#prev').addEventListener('click',previous)
 function previous(e){
     e ? e.preventDefault : ''

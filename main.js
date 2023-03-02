@@ -25,7 +25,7 @@ function getBooks(e, start = 0, max = 10){
         .then(data => {
             let total = data.totalItems
             console.log(data)
-            if(total === 0 || total === undefined) return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`: 'No Results Found'
+            if(total === 0 || total === undefined) return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`:'No Results Found'
             data.items.forEach((obj,i)=> {
                 // console.log('title: ', obj.volumeInfo.title, ',\n',//added
                 //             'subtitle: ', obj.volumeInfo?.subtitle, ',\n',//added

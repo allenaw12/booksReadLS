@@ -33,6 +33,12 @@ li {
     display: flex;
     flex-flow: row wrap;
 }
+.delete::before {
+    display: none;
+}
+.listDelete::before {
+    display: inline;
+}
 
 .information {
     max-width: 40rem;

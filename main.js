@@ -146,34 +146,47 @@ function previous(e){
     return getBooks(null, start-11)
 }
 
-document.querySelector('#my-lists').addEventListener('input', () =>{
+document.querySelector('#my-lists').addEventListener('input', getList)
+
+function getList(){
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('a').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
     let value = document.querySelector('#my-lists').value
     let storage = JSON.parse(localStorage.getItem(`${value}`))
-    if(!storage){
+    if(!storage || storage.length === 0){
         return document.querySelector('#error').innerHTML = "You haven't saved any books yet!"
     }
     console.log(storage)
     storage.forEach(book => {
-        let spans = [...book.matchAll('delete')]
+        //let spans = [...book.matchAll('delete')]
         //let entry = book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6)
         //console.log(book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6))
         let books = document.querySelector('.books')
         // books.innerHTML ? books.innerHTML += entry : books.innerHTML=entry
         books.innerHTML ? books.innerHTML += book : books.innerHTML=book
-
     })
     document.querySelectorAll('.delete').forEach(li => li.addEventListener('click',() => {
         console.log('I hear you want to delete')
-        // let value = document.querySelector('#my-lists').value
+        let first  = li.attributes[0].value.split(' ')
+        let string = document.querySelector(`li.${first[0]}`).outerHTML
+        console.log(string)
+        let value = document.querySelector('#my-lists').value
         // let first = li.attributes[0].value.split(' ')
         // let string = document.querySelector(`li.${first[0]}`).outerHTML
         // console.log(value, first, string)
         //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
-        //storage.push(string)
-        //localStorage.setItem('tbr', JSON.stringify(storage))
+        let storage = JSON.parse(localStorage.getItem(`${value}`))
+        console.log(storage.indexOf(string))
+        let newStore = storage.splice(storage.indexOf(string),1)
+        console.log(storage)
+        localStorage.setItem(`${value}`, JSON.stringify(storage))
+        window.scroll({
+            top: 0, 
+            left: 0, 
+            behavior: 'smooth' 
+           })
+        getList()
     }))
     document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click',() => {
         console.log('you want to move to read!')
@@ -186,5 +199,31 @@ document.querySelector('#my-lists').addEventListener('input', () =>{
         // let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
         // storage.push(string)
         // localStorage.setItem('read', JSON.stringify(storage))
+        let first  = li.attributes[0].value.split(' ')
+        let string = document.querySelector(`li.${first[0]}`).outerHTML
+        console.log(string)
+        let value = document.querySelector('#my-lists').value
+        // let first = li.attributes[0].value.split(' ')
+        // let string = document.querySelector(`li.${first[0]}`).outerHTML
+        // console.log(value, first, string)
+        //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
+        let storage = JSON.parse(localStorage.getItem(`${value}`))
+        console.log(storage.indexOf(string))
+        let newStore = storage.splice(storage.indexOf(string),1)
+        console.log(storage)
+        localStorage.setItem(`${value}`, JSON.stringify(storage))
+        let otherStore = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+        let spans = [...newStore[0].matchAll('span')]
+        console.log(newStore[0].slice(0, spans[1].index-1)+ 'DONDE' +newStore[0].slice(spans[2].index+5))
+        newStore = newStore[0].slice(0, spans[1].index-1)+newStore[0].slice(spans[2].index+5)
+        otherStore.push(newStore)
+        localStorage.setItem(`read`, JSON.stringify(otherStore))
+        window.scroll({
+            top: 0, 
+            left: 0, 
+            behavior: 'smooth' 
+           })
+        getList()
     }))
-})
+    
+}

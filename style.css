@@ -1,5 +1,6 @@
 body {
     font-size: 1.6rem;
+    scroll-behavior: smooth;
 }
 
 .thumbnail {
@@ -32,6 +33,14 @@ ol{
 li {
     display: flex;
     flex-flow: row wrap;
+}
+.read, .tbr, .delete {
+    border-radius: 40%;
+    padding: .5rem;
+    transition: background-color .1s ease-in-out;
+}
+.read:active, .tbr:active, .delete:active {
+    background-color: red;
 }
 
 .information {

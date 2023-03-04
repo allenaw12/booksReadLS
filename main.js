@@ -37,7 +37,7 @@ function getBooks(e, start = 0, max = 10){
                 let local = document.createElement('span')
                 let read = document.createElement('span')
                 let tbr = document.createElement('span')
-                let trash = document.createElement('span')
+                //let trash = document.createElement('span')
                 let link = document.createElement('a')
                 let img = document.createElement('img')
                 let li = document.createElement('li')
@@ -53,16 +53,16 @@ function getBooks(e, start = 0, max = 10){
                 }
                 let readClasses = `id${obj.id}` + ' read fa-regular fa-heart'
                 let tbrClasses = `id${obj.id}` + ' tbr fa-regular fa-bookmark'
-                let trashClasses = `id${obj.id}` + ' delete fa-regular fa-trash-can'
+                //let trashClasses = `id${obj.id}` + ' delete fa-regular fa-trash-can'
                 readClasses.split(' ').forEach(el => read.classList.add(el))
                 tbrClasses.split(' ').forEach(el => tbr.classList.add(el))
-                trashClasses.split(' ').forEach(el => trash.classList.add(el))
+                //trashClasses.split(' ').forEach(el => trash.classList.add(el))
                 li.classList.add(`id${obj.id}`)
                 console.log(`id${obj.id}`)
                 // title.classList.add(obj.id)
                 local.appendChild(read)
                 local.appendChild(tbr)
-                local.appendChild(trash)
+                //local.appendChild(trash)
                 li.appendChild(local)
                 link.href = `https://books.google.com/books?id=${obj.id}`
                 link.target = '_blank'
@@ -91,7 +91,10 @@ function getBooks(e, start = 0, max = 10){
             document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
                 let string = document.querySelector(`li.${first[0]}`).outerHTML
-                console.log(string)
+                let spans = [...string.matchAll('span')]
+                let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
+                console.log(string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
+                string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
                 let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
                 storage.push(string)
                 localStorage.setItem('read', JSON.stringify(storage))
@@ -99,11 +102,24 @@ function getBooks(e, start = 0, max = 10){
             document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
                 let string = document.querySelector(`li.${first[0]}`).outerHTML
-                console.log(string)
+                let spans = [...string.matchAll('span')]
+                let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
+                console.log(string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
+                string = string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
                 let storage = localStorage.getItem('tbr') ? JSON.parse(localStorage.getItem('tbr')) : []
                 storage.push(string)
                 localStorage.setItem('tbr', JSON.stringify(storage))
             }))
+            // document.querySelectorAll('.delete').forEach(li => li.addEventListener('click',() => {
+            //     console.log('I hear you')
+                // let value = document.querySelector('#my-lists').value
+                // let first = li.attributes[0].value.split(' ')
+                // let string = document.querySelector(`li.${first[0]}`).outerHTML
+                // console.log(value, first, string)
+                //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
+                //storage.push(string)
+                //localStorage.setItem('tbr', JSON.stringify(storage))
+            // }))
             let pageLinks = 1
             for(i=0;i<total;i+=10){
                 let a = document.createElement('a')
@@ -142,9 +158,33 @@ document.querySelector('#my-lists').addEventListener('input', () =>{
     console.log(storage)
     storage.forEach(book => {
         let spans = [...book.matchAll('delete')]
-        let entry = book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6)
-        console.log(book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6))
+        //let entry = book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6)
+        //console.log(book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6))
         let books = document.querySelector('.books')
-        books.innerHTML ? books.innerHTML += entry : books.innerHTML=entry
+        // books.innerHTML ? books.innerHTML += entry : books.innerHTML=entry
+        books.innerHTML ? books.innerHTML += book : books.innerHTML=book
+
     })
+    document.querySelectorAll('.delete').forEach(li => li.addEventListener('click',() => {
+        console.log('I hear you want to delete')
+        // let value = document.querySelector('#my-lists').value
+        // let first = li.attributes[0].value.split(' ')
+        // let string = document.querySelector(`li.${first[0]}`).outerHTML
+        // console.log(value, first, string)
+        //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
+        //storage.push(string)
+        //localStorage.setItem('tbr', JSON.stringify(storage))
+    }))
+    document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click',() => {
+        console.log('you want to move to read!')
+        // let first  = li.attributes[0].value.split(' ')
+        // let string = document.querySelector(`li.${first[0]}`).outerHTML
+        // let spans = [...string.matchAll('span')]
+        // let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
+        // console.log(string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
+        // string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
+        // let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+        // storage.push(string)
+        // localStorage.setItem('read', JSON.stringify(storage))
+    }))
 })

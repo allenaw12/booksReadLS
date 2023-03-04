@@ -10,7 +10,7 @@ function getBooks(e, start = 0, max = 10){
     if(filter.includes('-')){
         let both = input.split(',')
         filter = 'author'
-        input = both[0] + '"+intitle:"' + both[1].trim()
+        input = `"${both[1].trim()}intitle:${both[0].trim()}"`
     }
     //console.log(input, ',', filter, ',', start)
     document.querySelector('#my-lists').value = 'my-lists'
@@ -47,7 +47,7 @@ function getBooks(e, start = 0, max = 10){
                 let title = document.createElement('span')
                 let author = document.createElement('span')
                 let genre = document.createElement('span')
-                let description = document.createElement('span')
+                let description = document.createElement('p')
                 let pages = document.createElement('span')
                 if(i==0){
                     li.classList.add('counter')
@@ -60,7 +60,8 @@ function getBooks(e, start = 0, max = 10){
                 tbrClasses.split(' ').forEach(el => tbr.classList.add(el))
                 //trashClasses.split(' ').forEach(el => trash.classList.add(el))
                 div.classList.add('container')
-                li.classList.add(`id${obj.id}`)
+                // li.classList.add(`id${obj.id}`)
+                li.setAttribute('id',`id${obj.id}`)
                 console.log(`id${obj.id}`)
                 // title.classList.add(obj.id)
                 local.appendChild(read)
@@ -72,6 +73,7 @@ function getBooks(e, start = 0, max = 10){
                 link.target = '_blank'
                 art.classList.add('information')
                 img.classList.add('thumbnail')
+                description.classList.add('desc-short')
                 img.src = obj.volumeInfo.imageLinks?.thumbnail ||  obj.volumeInfo.imageLinks?.smallThumbnail ||'NoBookCover.png'
                 link.appendChild(img)
                 div.appendChild(link)
@@ -86,6 +88,20 @@ function getBooks(e, start = 0, max = 10){
                 art.appendChild(genre)
                 art.appendChild(pages)
                 art.appendChild(description)
+                //display partial description if over a certain length and not between a certain lengths(in case it's barely over)
+                //get length, put set height on box and overflow hidden, add more link element
+                //click event listener on more link, onclick change to less link, overflow visable and no set height
+                //reverse with less click   && description.innerText.length > 350
+                if(description.innerText.length > 400 || (title.innerText.length > 85 && description.innerText.length > 375)){
+                    console.log('long description', description.innerText.length, 'title length', title.innerText.length)
+                    let more = document.createElement('a')
+                    //more.href = `#id${obj.id}`
+                    more.innerText = '...more'
+                    more.classList.add(`id${obj.id}`)
+                    more.classList.add('more-less')
+                    art.appendChild(more)
+                }
+                //wanted to style first word to be bold, but it takes whole line, need to change-------------------
                 for(let child of art.children){
                     child.classList.add('descriptor')
                 }
@@ -97,7 +113,7 @@ function getBooks(e, start = 0, max = 10){
                 ////event listener to each heart that gets the entire li element, changes it to string, parses it back and puts into error element
             document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
-                let string = document.querySelector(`li.${first[0]}`).outerHTML
+                let string = document.querySelector(`li#${first[0]}`).outerHTML
                 let spans = [...string.matchAll('span')]
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
                 console.log(string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
@@ -108,7 +124,7 @@ function getBooks(e, start = 0, max = 10){
             }))
             document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
-                let string = document.querySelector(`li.${first[0]}`).outerHTML
+                let string = document.querySelector(`li#${first[0]}`).outerHTML
                 let spans = [...string.matchAll('span')]
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
                 console.log(string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
@@ -127,6 +143,19 @@ function getBooks(e, start = 0, max = 10){
                 //storage.push(string)
                 //localStorage.setItem('tbr', JSON.stringify(storage))
             // }))
+            document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
+                let first  = link.attributes[0].value.split(' ')
+                let el = link.previousSibling
+                if(link.innerText === '...more'){
+                    el.classList.add('desc-long')
+                    el.classList.remove('desc-short')
+                    link.innerText = 'less'
+                }else{
+                    el.classList.add('desc-short')
+                    el.classList.remove('desc-long')
+                    link.innerText = '...more'
+                }
+            }))
             let pageLinks = 1
             for(i=0;i<total;i+=10){
                 let a = document.createElement('a')
@@ -181,7 +210,7 @@ function getList(){
     document.querySelectorAll('.delete').forEach(li => li.addEventListener('click',() => {
         console.log('I hear you want to delete')
         let first  = li.attributes[0].value.split(' ')
-        let string = document.querySelector(`li.${first[0]}`).outerHTML
+        let string = document.querySelector(`li#${first[0]}`).outerHTML
         console.log(string)
         let value = document.querySelector('#my-lists').value
         // let first = li.attributes[0].value.split(' ')
@@ -212,7 +241,7 @@ function getList(){
         // storage.push(string)
         // localStorage.setItem('read', JSON.stringify(storage))
         let first  = li.attributes[0].value.split(' ')
-        let string = document.querySelector(`li.${first[0]}`).outerHTML
+        let string = document.querySelector(`li#${first[0]}`).outerHTML
         console.log(string)
         let value = document.querySelector('#my-lists').value
         // let first = li.attributes[0].value.split(' ')

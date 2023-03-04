@@ -44,6 +44,22 @@ li {
 .read:active, .tbr:active, .delete:active {
     background-color: red;
 }
+.desc-short{
+    margin: 0;
+    max-height: 20.5rem;
+    overflow-y: hidden;
+}
+.desc-long{
+    margin: 0;
+    max-height: fit-content;
+    overflow-y: visible;
+}
+.more-less {
+    cursor: pointer;
+    color:blue;
+    text-decoration: underline;
+    align-self: flex-end;
+}
 
 .information {
     max-width: 40rem;
@@ -51,6 +67,7 @@ li {
     flex-flow: column nowrap;
 }
 
+/* wanted to style first word to be bold, but it takes whole line, need to change------------------- */
 /* .descriptor {
     font-weight: bold;
 } */

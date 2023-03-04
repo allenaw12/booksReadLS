@@ -16,7 +16,7 @@
 </head>
 <body>
     <form action="">
-        <span>Note: if searching by both author and title, please type author first, title second, separated by a comma. ex: Michael Crichton, Jurassic Park</span>
+        <span>Note: if searching by both title and author, please type title first, author second, separated by a comma. ex: Jurassic Park, Michael Crichton</span>
         <label for="choice">Search by:</label>
         <select name="choice" id="choice">
             <option value="inauthor">Author</option>
@@ -26,6 +26,7 @@
             <option value="subject">Genre</option>
             <option value="isbn">ISBN</option>
         </select>
+        <label for="search">Search:</label>
         <input id="search" type="text">
         <button id="btn-search">Search</button>
     </form>

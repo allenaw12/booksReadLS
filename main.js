@@ -114,10 +114,16 @@ function getBooks(e, start = 0, max = 10){
             document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
+                if(string.indexOf('class="counter"') > -1){
+                    console.log('counter in element')
+                    let end = string.indexOf('id')
+                    string = string.slice(0,4) + string.slice(end)
+                }
                 let spans = [...string.matchAll('span')]
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
-                console.log(string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
+                // console.log(string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
                 string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
+                console.log(string)
                 let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
                 storage.push(string)
                 localStorage.setItem('read', JSON.stringify(storage))
@@ -125,10 +131,16 @@ function getBooks(e, start = 0, max = 10){
             document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
+                if(string.indexOf('class="counter"') > -1){
+                    console.log('counter in element')
+                    let end = string.indexOf('id')
+                    string = string.slice(0,4) + string.slice(end)
+                }
                 let spans = [...string.matchAll('span')]
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
-                console.log(string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
+                // console.log(string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
                 string = string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
+                console.log(string)
                 let storage = localStorage.getItem('tbr') ? JSON.parse(localStorage.getItem('tbr')) : []
                 storage.push(string)
                 localStorage.setItem('tbr', JSON.stringify(storage))
@@ -157,10 +169,13 @@ function getBooks(e, start = 0, max = 10){
                 }
             }))
             let pageLinks = 1
-            for(i=0;i<total;i+=10){
+            for(i=0;i<total;i+=max){
                 let a = document.createElement('a')
                 a.href = `javascript:getBooks(${null}, ${i})`
                 a.innerText = `${pageLinks}`
+                if(i === start){
+                    a.classList.add('current-page')
+                }
                 pageLinks++
                 document.querySelector('#pages').appendChild(a)
             }
@@ -173,7 +188,7 @@ function next(e){
     e ? e.preventDefault : ''
     let total = document.querySelector('.total').innerText
     let start = +document.querySelector('.counter').value
-    if(start+9 > +total) start = 0-9
+    if(start+9 >= +total) start = 0-9
     return getBooks(null, start+9)
 }
 
@@ -189,10 +204,12 @@ function previous(e){
 
 document.querySelector('#my-lists').addEventListener('input', getList)
 
-function getList(){
+function getList(e,start=0,max=10){
+    e?e.preventDefault:''
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('a').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
+    let total = document.querySelector('.total')
     let value = document.querySelector('#my-lists').value
     let storage = JSON.parse(localStorage.getItem(`${value}`))
     if(!storage || storage.length === 0){
@@ -266,5 +283,29 @@ function getList(){
            })
         getList()
     }))
-    
+    document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
+        let first  = link.attributes[0].value.split(' ')
+        let el = link.previousSibling
+        if(link.innerText === '...more'){
+            el.classList.add('desc-long')
+            el.classList.remove('desc-short')
+            link.innerText = 'less'
+        }else{
+            el.classList.add('desc-short')
+            el.classList.remove('desc-long')
+            link.innerText = '...more'
+        }
+    }))
+    total.innerText = storage.length
+    let pageLinks = 1
+    for(i=0;i<storage.length;i+=max){
+        let a = document.createElement('a')
+        a.href = `javascript:getList(${null}, ${i})`
+        a.innerText = `${pageLinks}`
+        if(i === start){
+            a.classList.add('current-page')
+        }
+        pageLinks++
+        document.querySelector('#pages').appendChild(a)
+    }
 }

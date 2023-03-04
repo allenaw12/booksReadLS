@@ -7,10 +7,13 @@ body {
     /* max-width: 100%; */
     min-height: 20rem;
     max-height: 20rem;
+    min-width: 100%;
     /* width: auto; */
-    padding: .5rem;
+    /* padding: .5rem; */
 }
-
+.container a{
+    padding:.5rem;
+}
 .page-container {
     display: flex;
     flex-flow: row nowrap;
@@ -60,7 +63,10 @@ li {
     text-decoration: underline;
     align-self: flex-end;
 }
-
+.current-page{
+    color:black;
+    text-decoration: none;
+}
 .information {
     max-width: 40rem;
     display: flex;

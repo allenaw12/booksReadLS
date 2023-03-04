@@ -27,10 +27,12 @@ body {
     gap: .5rem;
     justify-content: center;
 }
-ol{
-    padding:0;
-}
 li {
+    list-style-position: outside;
+    /* display: flex;
+    flex-flow: row wrap; */
+}
+.container {
     display: flex;
     flex-flow: row wrap;
 }

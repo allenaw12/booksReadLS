@@ -24,6 +24,7 @@ function getBooks(e, start = 0, max = 10){
         .then(data => {
             let total = data.totalItems
             console.log(data)
+            document.querySelector('.total').innerText = total
             if(total === 0 || total === undefined) return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`:'No Results Found'
             data.items.forEach((obj,i)=> {
                 // console.log('title: ', obj.volumeInfo.title, ',\n',//added
@@ -34,6 +35,7 @@ function getBooks(e, start = 0, max = 10){
                 //             'google book listing: ',`https://books.google.com/books?id=${obj.id}`, ',\n',
                 //             'pages: ', obj.volumeInfo?.pageCount, ',\n',
                 //              obj.volumeInfo)
+                let div = document.createElement('div')
                 let local = document.createElement('span')
                 let read = document.createElement('span')
                 let tbr = document.createElement('span')
@@ -57,20 +59,23 @@ function getBooks(e, start = 0, max = 10){
                 readClasses.split(' ').forEach(el => read.classList.add(el))
                 tbrClasses.split(' ').forEach(el => tbr.classList.add(el))
                 //trashClasses.split(' ').forEach(el => trash.classList.add(el))
+                div.classList.add('container')
                 li.classList.add(`id${obj.id}`)
                 console.log(`id${obj.id}`)
                 // title.classList.add(obj.id)
                 local.appendChild(read)
                 local.appendChild(tbr)
-                //local.appendChild(trash)
-                li.appendChild(local)
+                // local.appendChild(trash)
+                div.appendChild(local)
+                // li.appendChild(local)
                 link.href = `https://books.google.com/books?id=${obj.id}`
                 link.target = '_blank'
                 art.classList.add('information')
                 img.classList.add('thumbnail')
                 img.src = obj.volumeInfo.imageLinks?.thumbnail ||  obj.volumeInfo.imageLinks?.smallThumbnail ||'NoBookCover.png'
                 link.appendChild(img)
-                li.appendChild(link)
+                div.appendChild(link)
+                // li.appendChild(link)
                 title.innerText = `Title: ${obj.volumeInfo.title || 'None provided'}${obj.volumeInfo.subtitle ? `: ${obj.volumeInfo.subtitle}` : ''}`
                 author.innerText = `Author(s): ${obj.volumeInfo.authors?.join(', ') || 'None provided'}`
                 genre.innerText = `Genre(s): ${obj.volumeInfo.categories?.join(', ') || 'None provided'}`
@@ -84,7 +89,9 @@ function getBooks(e, start = 0, max = 10){
                 for(let child of art.children){
                     child.classList.add('descriptor')
                 }
-                li.appendChild(art)
+                div.appendChild(art)
+                li.appendChild(div)
+                // li.appendChild(art)
                 document.querySelector('ol').appendChild(li)
             })
                 ////event listener to each heart that gets the entire li element, changes it to string, parses it back and puts into error element
@@ -135,14 +142,19 @@ function getBooks(e, start = 0, max = 10){
 document.querySelector('#next').addEventListener('click',next)
 function next(e){
     e ? e.preventDefault : ''
+    let total = document.querySelector('.total').innerText
     let start = +document.querySelector('.counter').value
+    if(start+9 > +total) start = 0-9
     return getBooks(null, start+9)
 }
 
 document.querySelector('#prev').addEventListener('click',previous)
 function previous(e){
     e ? e.preventDefault : ''
+    let total = document.querySelector('.total').innerText
     let start = +document.querySelector('.counter').value
+    //total divided by number per page(10) rounded down, times number per page(10)
+    if(start-11 < 0) start = (Math.floor(total/10)*10)+11
     return getBooks(null, start-11)
 }
 

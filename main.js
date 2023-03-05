@@ -1,3 +1,6 @@
+//suggestion to change string from outerhtml into local storage into a js object and then parse back out...so like take what's in the innertext and put in local and then use to display when lists are requested...
+//could use fetch function to build, just check if need a fetch or not...need to refactor whole function for it, but it can be done!
+
 
 document.querySelector('form').addEventListener('submit', getBooks)
 
@@ -189,7 +192,15 @@ function next(e){
     let total = document.querySelector('.total').innerText
     let start = +document.querySelector('.counter').value
     if(start+9 >= +total) start = 0-9
-    return getBooks(null, start+9)
+    if(document.querySelector('#my-lists').value !== 'my-lists'){
+        window.scroll({
+            top: 0, 
+            left: 0, 
+            behavior: 'smooth' 
+           })
+        return getList(null, start+9)
+    }else{
+        return getBooks(null, start+9)}
 }
 
 document.querySelector('#prev').addEventListener('click',previous)
@@ -199,7 +210,15 @@ function previous(e){
     let start = +document.querySelector('.counter').value
     //total divided by number per page(10) rounded down, times number per page(10)
     if(start-11 < 0) start = (Math.floor(total/10)*10)+11
-    return getBooks(null, start-11)
+    if(document.querySelector('#my-lists').value !== 'my-lists'){
+        window.scroll({
+            top: 0, 
+            left: 0, 
+            behavior: 'smooth' 
+           })
+        return getList(null, start-11)
+    }else{
+        return getBooks(null, start-11)}
 }
 
 document.querySelector('#my-lists').addEventListener('input', getList)
@@ -216,7 +235,20 @@ function getList(e,start=0,max=10){
         return document.querySelector('#error').innerHTML = "You haven't saved any books yet!"
     }
     console.log(storage)
-    storage.forEach(book => {
+    let pageDisplay = storage.slice(start, start+max)
+    pageDisplay.forEach((book,i) => {
+        // if(book.indexOf('class="counter"') > -1){
+        //     console.log('counter in element')
+        //     let end = book.indexOf('id')
+            
+        //     console.log(book = book.slice(0,4) + book.slice(end))
+        // }else
+        if(i===0){
+            console.log('add counter for list')
+            let classCounter = ` class="counter" value="${start+1}" `
+            console.log(book.slice(0, 3) + classCounter + book.slice(4))
+            book = book.slice(0, 3) + classCounter + book.slice(4)
+        }
         //let spans = [...book.matchAll('delete')]
         //let entry = book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6)
         //console.log(book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6))

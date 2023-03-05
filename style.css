@@ -2,6 +2,19 @@ body {
     font-size: 1.6rem;
     scroll-behavior: smooth;
 }
+header {
+    text-align: center;
+    padding: 1rem;
+}
+h1 {
+    margin-top: 0;
+}
+fieldset {
+    border-style: none;
+}
+#btn-search, #sort-and-storage {
+    margin: .5rem;
+}
 
 .thumbnail {
     /* max-width: 100%; */
@@ -11,7 +24,7 @@ body {
     /* width: auto; */
     /* padding: .5rem; */
 }
-.container a{
+.container>a{
     padding:.5rem;
 }
 .page-container {
@@ -29,6 +42,10 @@ body {
     flex-flow: row wrap;
     gap: .5rem;
     justify-content: center;
+}
+.books {
+    margin-top: 0;
+    padding-right: 1rem;
 }
 li {
     list-style-position: outside;
@@ -49,7 +66,7 @@ li {
 }
 .desc-short{
     margin: 0;
-    max-height: 20.5rem;
+    max-height: 20.2rem;
     overflow-y: hidden;
 }
 .desc-long{
@@ -58,6 +75,7 @@ li {
     overflow-y: visible;
 }
 .more-less {
+    padding: 0;
     cursor: pointer;
     color:blue;
     text-decoration: underline;

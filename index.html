@@ -15,27 +15,36 @@
     <link rel="stylesheet" href="css/all.min.css">
 </head>
 <body>
-    <form action="">
+    <header>
+        <h1>Books, books, books!</h1>
+        <form action="">
+            <fieldset>
+                <label for="choice">Search by:</label>
+                <select name="choice" id="choice">
+                    <option value="inauthor">Author</option>
+                    <option value="intitle">Title</option>
+                    <option value="inauthor-title">Title and Author</option>
+                    <option value="inpublisher">Publisher</option>
+                    <option value="subject">Genre</option>
+                    <option value="isbn">ISBN</option>
+                </select>
+            </fieldset>
+            <fieldset>
+                <label for="search">Search:</label>
+                <input id="search" type="text" placeholder="google watermark">
+                <button id="btn-search">Search</button>
+            </fieldset>
+        </form>
         <span>Note: if searching by both title and author, please type title first, author second, separated by a comma. ex: Jurassic Park, Michael Crichton</span>
-        <label for="choice">Search by:</label>
-        <select name="choice" id="choice">
-            <option value="inauthor">Author</option>
-            <option value="intitle">Title</option>
-            <option value="inauthor-title">Author and Title</option>
-            <option value="inpublisher">Publisher</option>
-            <option value="subject">Genre</option>
-            <option value="isbn">ISBN</option>
+        <div id="sort-and-storage">
+            <select name="my-lists" id="my-lists">
+            <option value="my-lists" disabled selected>My Lists</option>
+            <option value="read">Read</option>
+            <option value="tbr">TBR</option>
         </select>
-        <label for="search">Search:</label>
-        <input id="search" type="text">
-        <button id="btn-search">Search</button>
-    </form>
-    <select name="my-lists" id="my-lists">
-        <option value="my-lists" disabled selected>My Lists</option>
-        <option value="read">Read</option>
-        <option value="tbr">TBR</option>
-    </select>
-    <span>Results: </span><span class="total"></span>
+        <span>Results: </span><span class="total"></span>
+        </div>
+    </header>
     <section class="results">
         <span id="error"></span>
         <!-- <span class="read fa-regular fa-heart"></span>

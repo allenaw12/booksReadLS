@@ -1,7 +1,6 @@
 //suggestion to change string from outerhtml into local storage into a js object and then parse back out...so like take what's in the innertext and put in local and then use to display when lists are requested...
 //could use fetch function to build, just check if need a fetch or not...need to refactor whole function for it, but it can be done!
 
-
 document.querySelector('form').addEventListener('submit', getBooks)
 
 function getBooks(e, start = 0, max = 10){
@@ -65,7 +64,7 @@ function getBooks(e, start = 0, max = 10){
                 div.classList.add('container')
                 // li.classList.add(`id${obj.id}`)
                 li.setAttribute('id',`id${obj.id}`)
-                console.log(`id${obj.id}`)
+                //console.log(`id${obj.id}`)
                 // title.classList.add(obj.id)
                 local.appendChild(read)
                 local.appendChild(tbr)
@@ -113,7 +112,6 @@ function getBooks(e, start = 0, max = 10){
                 // li.appendChild(art)
                 document.querySelector('ol').appendChild(li)
             })
-                ////event listener to each heart that gets the entire li element, changes it to string, parses it back and puts into error element
             document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
@@ -126,7 +124,7 @@ function getBooks(e, start = 0, max = 10){
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
                 // console.log(string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
                 string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
-                console.log(string)
+                //console.log(string)
                 let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
                 storage.push(string)
                 localStorage.setItem('read', JSON.stringify(storage))
@@ -143,7 +141,7 @@ function getBooks(e, start = 0, max = 10){
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
                 // console.log(string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
                 string = string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
-                console.log(string)
+                //console.log(string)
                 let storage = localStorage.getItem('tbr') ? JSON.parse(localStorage.getItem('tbr')) : []
                 storage.push(string)
                 localStorage.setItem('tbr', JSON.stringify(storage))
@@ -246,7 +244,7 @@ function getList(e,start=0,max=10){
         if(i===0){
             console.log('add counter for list')
             let classCounter = ` class="counter" value="${start+1}" `
-            console.log(book.slice(0, 3) + classCounter + book.slice(4))
+            //console.log(book.slice(0, 3) + classCounter + book.slice(4))
             book = book.slice(0, 3) + classCounter + book.slice(4)
         }
         //let spans = [...book.matchAll('delete')]
@@ -257,10 +255,10 @@ function getList(e,start=0,max=10){
         books.innerHTML ? books.innerHTML += book : books.innerHTML=book
     })
     document.querySelectorAll('.delete').forEach(li => li.addEventListener('click',() => {
-        console.log('I hear you want to delete')
+        //console.log('I hear you want to delete')
         let first  = li.attributes[0].value.split(' ')
         let string = document.querySelector(`li#${first[0]}`).outerHTML
-        console.log(string)
+        //console.log(string)
         let value = document.querySelector('#my-lists').value
         // let first = li.attributes[0].value.split(' ')
         // let string = document.querySelector(`li.${first[0]}`).outerHTML
@@ -268,7 +266,6 @@ function getList(e,start=0,max=10){
         //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
         let storage = JSON.parse(localStorage.getItem(`${value}`))
         console.log(storage.indexOf(string))
-        let newStore = storage.splice(storage.indexOf(string),1)
         console.log(storage)
         localStorage.setItem(`${value}`, JSON.stringify(storage))
         window.scroll({
@@ -279,7 +276,7 @@ function getList(e,start=0,max=10){
         getList()
     }))
     document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click',() => {
-        console.log('you want to move to read!')
+        //console.log('you want to move to read!')
         // let first  = li.attributes[0].value.split(' ')
         // let string = document.querySelector(`li.${first[0]}`).outerHTML
         // let spans = [...string.matchAll('span')]
@@ -291,7 +288,7 @@ function getList(e,start=0,max=10){
         // localStorage.setItem('read', JSON.stringify(storage))
         let first  = li.attributes[0].value.split(' ')
         let string = document.querySelector(`li#${first[0]}`).outerHTML
-        console.log(string)
+        //console.log(string)
         let value = document.querySelector('#my-lists').value
         // let first = li.attributes[0].value.split(' ')
         // let string = document.querySelector(`li.${first[0]}`).outerHTML

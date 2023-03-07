@@ -2,7 +2,6 @@
 //could use fetch function to build, just check if need a fetch or not...need to refactor whole function for it, but it can be done!
 
 document.querySelector('form').addEventListener('submit', getBooks)
-
 function getBooks(e, start = 0, max = 10){
     e ? e.preventDefault() : ''
     let input = document.querySelector('#search').value
@@ -14,7 +13,6 @@ function getBooks(e, start = 0, max = 10){
         filter = 'author'
         input = `"${both[1].trim()}intitle:${both[0].trim()}"`
     }
-    //console.log(input, ',', filter, ',', start)
     document.querySelector('#my-lists').value = 'my-lists'
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('a').forEach(el => el.remove())
@@ -29,19 +27,10 @@ function getBooks(e, start = 0, max = 10){
             document.querySelector('.total').innerText = total
             if(total === 0 || total === undefined) return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`:'No Results Found'
             data.items.forEach((obj,i)=> {
-                // console.log('title: ', obj.volumeInfo.title, ',\n',//added
-                //             'subtitle: ', obj.volumeInfo?.subtitle, ',\n',//added
-                //             'authors: ',obj.volumeInfo.authors?.join(', '), ',\n',//added
-                //             'categories: ',obj.volumeInfo.categories?.join(', '), ',\n',//added
-                //             'description: ', obj.volumeInfo.description || obj.searchInfo?.textSnippet || 'No description available', ',\n',
-                //             'google book listing: ',`https://books.google.com/books?id=${obj.id}`, ',\n',
-                //             'pages: ', obj.volumeInfo?.pageCount, ',\n',
-                //              obj.volumeInfo)
                 let div = document.createElement('div')
                 let local = document.createElement('span')
                 let read = document.createElement('span')
                 let tbr = document.createElement('span')
-                //let trash = document.createElement('span')
                 let link = document.createElement('a')
                 let img = document.createElement('img')
                 let li = document.createElement('li')
@@ -51,20 +40,24 @@ function getBooks(e, start = 0, max = 10){
                 let genre = document.createElement('span')
                 let description = document.createElement('p')
                 let pages = document.createElement('span')
+                let isbn = document.createElement('span')
                 if(i==0){
                     li.classList.add('counter')
                     li.value = start+1
                 }
+                let texts = obj.volumeInfo.industryIdentifiers.map(el => `${el.type}: ${el.identifier}`)
+                //link to JSON data for book = obj.selfLink
+                //link to buy ebook or google books information = obj.volumeInfo.canonicalVolumeLink, obj.volumeInfo.infoLink
+                //link to preview or google books info = obj.volumeInfo.previewLink
+                console.log(obj.selfLink)
+                isbn.innerText = texts.join(', ')
                 let readClasses = `id${obj.id}` + ' read fa-regular fa-heart'
                 let tbrClasses = `id${obj.id}` + ' tbr fa-regular fa-bookmark'
-                //let trashClasses = `id${obj.id}` + ' delete fa-regular fa-trash-can'
                 readClasses.split(' ').forEach(el => read.classList.add(el))
                 tbrClasses.split(' ').forEach(el => tbr.classList.add(el))
-                //trashClasses.split(' ').forEach(el => trash.classList.add(el))
                 div.classList.add('container')
                 // li.classList.add(`id${obj.id}`)
                 li.setAttribute('id',`id${obj.id}`)
-                //console.log(`id${obj.id}`)
                 // title.classList.add(obj.id)
                 local.appendChild(read)
                 local.appendChild(tbr)
@@ -97,7 +90,6 @@ function getBooks(e, start = 0, max = 10){
                 if(description.innerText.length > 400 || (title.innerText.length > 85 && description.innerText.length > 375)){
                     console.log('long description', description.innerText.length, 'title length', title.innerText.length)
                     let more = document.createElement('a')
-                    //more.href = `#id${obj.id}`
                     more.innerText = '...more'
                     more.classList.add(`id${obj.id}`)
                     more.classList.add('more-less')
@@ -146,16 +138,6 @@ function getBooks(e, start = 0, max = 10){
                 storage.push(string)
                 localStorage.setItem('tbr', JSON.stringify(storage))
             }))
-            // document.querySelectorAll('.delete').forEach(li => li.addEventListener('click',() => {
-            //     console.log('I hear you')
-                // let value = document.querySelector('#my-lists').value
-                // let first = li.attributes[0].value.split(' ')
-                // let string = document.querySelector(`li.${first[0]}`).outerHTML
-                // console.log(value, first, string)
-                //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
-                //storage.push(string)
-                //localStorage.setItem('tbr', JSON.stringify(storage))
-            // }))
             document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
                 let first  = link.attributes[0].value.split(' ')
                 let el = link.previousSibling
@@ -189,6 +171,7 @@ function next(e){
     e ? e.preventDefault : ''
     let total = document.querySelector('.total').innerText
     let start = +document.querySelector('.counter').value
+    //if you hit next at the end of the list, jumps to first page
     if(start+9 >= +total) start = 0-9
     if(document.querySelector('#my-lists').value !== 'my-lists'){
         window.scroll({
@@ -207,6 +190,7 @@ function previous(e){
     let total = document.querySelector('.total').innerText
     let start = +document.querySelector('.counter').value
     //total divided by number per page(10) rounded down, times number per page(10)
+    //from first page if hit prev
     if(start-11 < 0) start = (Math.floor(total/10)*10)+11
     if(document.querySelector('#my-lists').value !== 'my-lists'){
         window.scroll({
@@ -220,9 +204,8 @@ function previous(e){
 }
 
 document.querySelector('#my-lists').addEventListener('input', getList)
-
 function getList(e,start=0,max=10){
-    e?e.preventDefault:''
+    e ? e.preventDefault : ''
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('a').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
@@ -258,7 +241,7 @@ function getList(e,start=0,max=10){
         //console.log('I hear you want to delete')
         let first  = li.attributes[0].value.split(' ')
         let string = document.querySelector(`li#${first[0]}`).outerHTML
-        //console.log(string)
+        console.log(string)
         let value = document.querySelector('#my-lists').value
         // let first = li.attributes[0].value.split(' ')
         // let string = document.querySelector(`li.${first[0]}`).outerHTML
@@ -266,6 +249,7 @@ function getList(e,start=0,max=10){
         //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
         let storage = JSON.parse(localStorage.getItem(`${value}`))
         console.log(storage.indexOf(string))
+        let newStore = storage.splice(storage.indexOf(string),1)
         console.log(storage)
         localStorage.setItem(`${value}`, JSON.stringify(storage))
         window.scroll({

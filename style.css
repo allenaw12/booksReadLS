@@ -1,6 +1,8 @@
 body {
     font-size: 1.6rem;
     scroll-behavior: smooth;
+    background-color: rgb(5, 5, 71);
+    color: rgb(228, 239, 244);
 }
 header {
     text-align: center;
@@ -15,7 +17,6 @@ fieldset {
 #btn-search, #sort-and-storage {
     margin: .5rem;
 }
-
 .thumbnail {
     /* max-width: 100%; */
     min-height: 20rem;
@@ -33,10 +34,13 @@ fieldset {
     justify-content: center;
     gap: .5rem;
 }
+/* :has is not firefox compatible yet, but it doesn't cause an issue, just displays normal instead of hide */
+.page-container:has(#pages:empty), .searches:has(.total:empty){
+    display: none;
+}
 #prev, #next {
     align-self: center;
 }
-
 #pages {
     display: flex;
     flex-flow: row wrap;

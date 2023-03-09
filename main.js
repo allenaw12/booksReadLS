@@ -20,10 +20,11 @@ function getBooks(e, start = 0, max = 10){
     //resetting values before delivering search results
     document.querySelector('#my-lists').value = 'my-lists'
     document.querySelectorAll('li').forEach(el => el.remove())
-    document.querySelectorAll('a').forEach(el => el.remove())
+    document.querySelectorAll('.page-links')?.forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
     //putting string of fetch site together
     let fetching = `https://www.googleapis.com/books/v1/volumes?q=${filter}:${input.includes(' ') ? input.split(' ').join('%20'):input}&startIndex=${start}&maxResults=${max}&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`
+    // let fetching = `https://www.googleapis.com/books/v1/volumes?q=${filter}:${input.includes(' ') ? input.split(' ').join('%20'):input}&startIndex=${start}&maxResults=${max}&fields=totalItems,items(id,searchInfo(textSnippet),selfLink,volumeInfo(authors,categories,description,imageLinks,industryIdentifiers,pageCount,subtitle,title))&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`
     console.log(fetching)
     //fetch from API
     fetch(fetching)
@@ -56,18 +57,24 @@ function getBooks(e, start = 0, max = 10){
                 let pages = document.createElement('span')
                 let isbn = document.createElement('span')
                 //setting counter so results list can be numerated
-                if(i==0){
-                    li.classList.add('counter')
-                    li.value = start+1
-                }
+                // if(i==0){
+                //     li.classList.add('counter')
+                //     li.value = start+1
+                // }
                 //saving volume specific identifiers by iterating thru object
-                let texts = obj.volumeInfo.industryIdentifiers.map(el => `${el.type}: ${el.identifier}`)
+                let texts = obj.volumeInfo.industryIdentifiers?.map(el => `${el.type}: ${el.identifier}`)
                 //link to JSON data for book = obj.selfLink
                 //link to buy ebook or google books information = obj.volumeInfo.canonicalVolumeLink, obj.volumeInfo.infoLink
                 //link to preview or google books info = obj.volumeInfo.previewLink
+                    //if true, link goes to preview book page, if false goes to general book page
+                console.log('preview',obj.volumeInfo?.previewLink, obj.volumeInfo?.previewLink.indexOf('printsec')>-1)
+                    //if true, can purchase on play store, link to that, if false, general book page
+                console.log('buy/info',obj.volumeInfo?.canonicalVolumeLink,obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1)
+                    //same as above, but has source in url that it's from google books api
+                console.log('buy/info',obj.volumeInfo?.infoLink)
                 console.log(obj.selfLink)
                 //concatenating identifiers into single line to save/display
-                isbn.innerText = texts.join(', ')
+                isbn.innerText = texts?.join(', ')
                 //declareing and adding classes to heart icon for read list and bookmark icon for tbr list
                 let readClasses = `id${obj.id}` + ' read fa-regular fa-heart'
                 let tbrClasses = `id${obj.id}` + ' tbr fa-regular fa-bookmark'
@@ -126,6 +133,7 @@ function getBooks(e, start = 0, max = 10){
                 //append text holding container to bigger book container and then that to the li and then to the ol!
                 div.appendChild(art)
                 li.appendChild(div)
+                document.querySelector('ol').setAttribute('start', `${start+1}`)
                 document.querySelector('ol').appendChild(li)
             })
             //adding event listener to read icons for click event
@@ -135,11 +143,11 @@ function getBooks(e, start = 0, max = 10){
                 //getting entire li element and all it's HTML
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
                 //editing html if class counter is detected, and removing that class
-                if(string.indexOf('class="counter"') > -1){
-                    console.log('counter in element')
-                    let end = string.indexOf('id')
-                    string = string.slice(0,4) + string.slice(end)
-                }
+                // if(string.indexOf('class="counter"') > -1){
+                //     console.log('counter in element')
+                //     let end = string.indexOf('id')
+                //     string = string.slice(0,4) + string.slice(end)
+                // }
                 //making array of indices of spans in html string
                 let spans = [...string.matchAll('span')]
                 //creating a class variable to add to delete icon being added to read and tbr elements
@@ -157,11 +165,11 @@ function getBooks(e, start = 0, max = 10){
             document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
-                if(string.indexOf('class="counter"') > -1){
-                    console.log('counter in element')
-                    let end = string.indexOf('id')
-                    string = string.slice(0,4) + string.slice(end)
-                }
+                // if(string.indexOf('class="counter"') > -1){
+                //     console.log('counter in element')
+                //     let end = string.indexOf('id')
+                //     string = string.slice(0,4) + string.slice(end)
+                // }
                 let spans = [...string.matchAll('span')]
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
                 // console.log(string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
@@ -192,6 +200,7 @@ function getBooks(e, start = 0, max = 10){
                 if(i === start){
                     a.classList.add('current-page')
                 }
+                a.classList.add('page-links')
                 pageLinks++
                 document.querySelector('#pages').appendChild(a)
             }
@@ -203,7 +212,9 @@ document.querySelector('#next').addEventListener('click',next)
 function next(e){
     e ? e.preventDefault : ''
     let total = document.querySelector('.total').innerText
-    let start = +document.querySelector('.counter').value
+    //let start = +document.querySelector('.counter').value
+    let start = +document.querySelector('ol').getAttribute('start')
+    console.log(start)
     //if you hit next at the end of the list, jumps to first page
     if(start+9 >= +total) start = 0-9
     if(document.querySelector('#my-lists').value !== 'my-lists'){
@@ -221,7 +232,9 @@ document.querySelector('#prev').addEventListener('click',previous)
 function previous(e){
     e ? e.preventDefault : ''
     let total = document.querySelector('.total').innerText
-    let start = +document.querySelector('.counter').value
+    //let start = +document.querySelector('.counter').value
+    let start = +document.querySelector('ol').getAttribute('start')
+    console.log(start)
     //total divided by number per page(10) rounded down, times number per page(10)
     //from first page if hit prev
     if(start-11 < 0) start = (Math.floor(total/10)*10)+11
@@ -240,7 +253,7 @@ document.querySelector('#my-lists').addEventListener('input', getList)
 function getList(e,start=0,max=10){
     e ? e.preventDefault : ''
     document.querySelectorAll('li').forEach(el => el.remove())
-    document.querySelectorAll('a').forEach(el => el.remove())
+    document.querySelectorAll('.page-links').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
     let total = document.querySelector('.total')
     let value = document.querySelector('#my-lists').value
@@ -257,12 +270,12 @@ function getList(e,start=0,max=10){
             
         //     console.log(book = book.slice(0,4) + book.slice(end))
         // }else
-        if(i===0){
-            console.log('add counter for list')
-            let classCounter = ` class="counter" value="${start+1}" `
-            //console.log(book.slice(0, 3) + classCounter + book.slice(4))
-            book = book.slice(0, 3) + classCounter + book.slice(4)
-        }
+        // if(i===0){
+        //     console.log('add counter for list')
+        //     let classCounter = ` class="counter" value="${start+1}" `
+        //     //console.log(book.slice(0, 3) + classCounter + book.slice(4))
+        //     book = book.slice(0, 3) + classCounter + book.slice(4)
+        // }
         //let spans = [...book.matchAll('delete')]
         //let entry = book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6)
         //console.log(book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6))
@@ -351,7 +364,9 @@ function getList(e,start=0,max=10){
         if(i === start){
             a.classList.add('current-page')
         }
+        a.classList.add('page-links')
         pageLinks++
         document.querySelector('#pages').appendChild(a)
     }
+    document.querySelector('ol').setAttribute('start', `${start+1}`)
 }

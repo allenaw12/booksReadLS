@@ -4,7 +4,7 @@ document.querySelector('form').addEventListener('submit', getBooks)
 function getBooks(e, start = 0, max = 10){
     e ? e.preventDefault() : ''
     //search term
-    let input = document.querySelector('#search').value
+    let input = searchTerm = document.querySelector('#search').value
     //if nothing, don't ping the API!
     if(input === ''){return document.querySelector('#error').innerText = 'Please type a query into search field.'}
     //what want to search within, author, title etc
@@ -22,6 +22,8 @@ function getBooks(e, start = 0, max = 10){
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('.page-links')?.forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
+    document.querySelector('.total').innerText = ''
+    document.querySelector('.search-power').innerText = ''
     //putting string of fetch site together
     let fetching = `https://www.googleapis.com/books/v1/volumes?q=${filter}:${input.includes(' ') ? input.split(' ').join('%20'):input}&startIndex=${start}&maxResults=${max}&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`
     // let fetching = `https://www.googleapis.com/books/v1/volumes?q=${filter}:${input.includes(' ') ? input.split(' ').join('%20'):input}&startIndex=${start}&maxResults=${max}&fields=totalItems,items(id,searchInfo(textSnippet),selfLink,volumeInfo(authors,categories,description,imageLinks,industryIdentifiers,pageCount,subtitle,title))&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`
@@ -37,6 +39,7 @@ function getBooks(e, start = 0, max = 10){
             console.log(data)
             //displaying total in DOM
             document.querySelector('.total').innerText = total
+            document.querySelector('.search-power').innerText = `Google Books search results for "${searchTerm}": `
             //error display for no results found
             if(total === 0 || total === undefined) return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`:'No Results Found'
             //create 'cards' to display books matching search
@@ -181,12 +184,17 @@ function getBooks(e, start = 0, max = 10){
             }))
             document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
                 let first  = link.attributes[0].value.split(' ')
+                console.log(first)
                 let el = link.previousSibling
                 if(link.innerText === '...more'){
                     el.classList.add('desc-long')
+                    el.setAttribute('id','less')
+                    link.setAttribute('href',`#${first[0]}`)
                     el.classList.remove('desc-short')
                     link.innerText = 'less'
                 }else{
+                    el.removeAttribute('id')
+                    // link.removeAttribute('href')
                     el.classList.add('desc-short')
                     el.classList.remove('desc-long')
                     link.innerText = '...more'
@@ -355,7 +363,8 @@ function getList(e,start=0,max=10){
             link.innerText = '...more'
         }
     }))
-    total.innerText = storage.length
+    // total.innerText = storage.length
+    document.querySelector('.search-power').innerText = `${storage.length} Google Books saved results from your ${value==='read'?'Read':'TBR'} list`
     let pageLinks = 1
     for(i=0;i<storage.length;i+=max){
         let a = document.createElement('a')

@@ -25,30 +25,31 @@
             <option value="read">Read</option>
             <option value="tbr">TBR</option>
         </select>
-        <form action="">
-            <fieldset id="search-by">
-                <label for="choice">Search by:</label>
-                <select name="choice" id="choice">
-                    <option value="inauthor">Author</option>
-                    <option value="intitle">Title</option>
-                    <option value="inauthor-title">Title and Author</option>
-                    <option value="inpublisher">Publisher</option>
-                    <option value="subject">Genre</option>
-                    <option value="isbn">ISBN</option>
-                </select>
-            </fieldset>
-            <fieldset id="search-input">
-                <label for="search">Search:</label>
-                <input id="search" type="text" placeholder="">
-                <button id="btn-search">Search</button>
-                <span class="search-note">Note: if searching by both title and author, please type title first, author second, separated by a comma. ex: Jurassic Park, Michael Crichton</span>
-            </fieldset>
-        </form>
-        <div id="result-count">
-            <span class="search-power">Google Books search results: </span>
-            <span class="total"></span>
-        </div>
     </header>
+    <form action="">
+        <fieldset id="search-by">
+            <label for="choice">Search by:</label>
+            <select name="choice" id="choice">
+                <option value="inauthor">Author</option>
+                <option value="intitle">Title</option>
+                <option value="inauthor-title">Title and Author</option>
+                <option value="inpublisher">Publisher</option>
+                <option value="subject">Genre</option>
+                <option value="isbn">ISBN</option>
+            </select>
+        </fieldset>
+        <fieldset id="search-input">
+            <label for="search">Search:</label>
+            <input id="search" type="text" placeholder="">
+            <button id="btn-search">Search</button>
+            <span class="search-note">Note: if searching by both title and author, please type title first, author second, separated by a comma. ex: Jurassic Park, Michael Crichton</span>
+        </fieldset>
+    </form>
+    <div id="result-count">
+        <span class="search-power"></span>
+        <span class="total"></span>
+    </div>
+
     <section class="results">
         <span id="error"></span>
         <!-- <span class="read fa-regular fa-heart"></span>
@@ -56,13 +57,13 @@
         <ol class="books"></ol>
     </section>
     <nav class="page-container">
-        <button id="prev">Previous</button>
+        <button id="prev">Prev</button>
         <span id="pages"></span>
         <button id="next">Next</button>
     </nav>
     <footer>
         <span>Website built by: <a target="_blank" href="https://allenawilliamsonportfolio.netlify.app/">Allena Williamson</a></span>
-        <span>Data from: <a target="_blank" href="">Book</a></span>
+        <span>Book information and search service powered by <a target="_blank" href="https://books.google.com">Google Books</a> and the <a target="_blank" href="https://developer.google.com/books">Google Books API Family</a></span>
     </footer>
     <script src="main.js"></script>
 </body>

@@ -1,3 +1,7 @@
+@font-face {
+    font-family: 'Rubik Iso',cursive;
+    src: local('webfonts/Rubik_Iso/RubikIso-Regular.ttf');
+}
 body {
     font-size: 1.6rem;
     scroll-behavior: smooth;
@@ -9,13 +13,41 @@ header {
     padding: 1rem;
 }
 h1 {
-    margin-top: 0;
+    font: 4rem 'Rubik Iso';
+    margin: 0;
+    padding-bottom: 1rem;
 }
-fieldset {
-    border-style: none;
+#my-lists{
+    padding: .5rem;
+    margin-bottom: .5rem;
 }
-#btn-search, #sort-and-storage {
+#search{
+    vertical-align: middle;
+    width:50%;
+    background-image: url('google_watermark.gif');
+    background-repeat: no-repeat;
+}
+#search-by {
+    padding:.5rem;
+    border-bottom-style: none;
+}
+#search-input{
+    padding-bottom: .5rem;
+    border-top-style: none;
+}
+.search-note{
+    display: inline-block;
+    margin-top: .5rem;
+}
+/* #btn-search,  */
+#result-count{
+    
     margin: .5rem;
+}
+#btn-search{
+    vertical-align: middle;
+    /* display: block; */
+    /* margin: .5rem auto; */
 }
 .thumbnail {
     /* max-width: 100%; */
@@ -35,10 +67,11 @@ fieldset {
     gap: .5rem;
 }
 /* :has is not firefox compatible yet, but it doesn't cause an issue, just displays normal instead of hide */
-.page-container:has(#pages:empty), .searches:has(.total:empty){
+.page-container:has(#pages:empty), #result-count:has(.total:empty){
     display: none;
 }
 #prev, #next {
+    cursor: pointer;
     align-self: center;
 }
 #pages {

@@ -13,12 +13,20 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/all.css">
     <link rel="stylesheet" href="css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Iso&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>Books, books, books!</h1>
+        <h1>Overbooked</h1>
+        <select name="my-lists" id="my-lists">
+            <option value="my-lists" disabled selected>My Lists</option>
+            <option value="read">Read</option>
+            <option value="tbr">TBR</option>
+        </select>
         <form action="">
-            <fieldset>
+            <fieldset id="search-by">
                 <label for="choice">Search by:</label>
                 <select name="choice" id="choice">
                     <option value="inauthor">Author</option>
@@ -29,23 +37,16 @@
                     <option value="isbn">ISBN</option>
                 </select>
             </fieldset>
-            <fieldset>
+            <fieldset id="search-input">
                 <label for="search">Search:</label>
-                <input id="search" type="text" placeholder="google watermark">
+                <input id="search" type="text" placeholder="">
                 <button id="btn-search">Search</button>
+                <span class="search-note">Note: if searching by both title and author, please type title first, author second, separated by a comma. ex: Jurassic Park, Michael Crichton</span>
             </fieldset>
         </form>
-        <span>Note: if searching by both title and author, please type title first, author second, separated by a comma. ex: Jurassic Park, Michael Crichton</span>
-        <div id="sort-and-storage">
-            <select name="my-lists" id="my-lists">
-            <option value="my-lists" disabled selected>My Lists</option>
-            <option value="read">Read</option>
-            <option value="tbr">TBR</option>
-        </select>
-        <div class="searches">
+        <div id="result-count">
             <span class="search-power">Google Books search results: </span>
             <span class="total"></span>
-        </div>
         </div>
     </header>
     <section class="results">

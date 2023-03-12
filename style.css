@@ -9,17 +9,22 @@ body {
     color: rgb(228, 239, 244);
 }
 header {
-    text-align: center;
     padding: 1rem;
 }
 h1 {
-    font: 4rem 'Rubik Iso';
+    font: 4.5rem 'Rubik Iso';
     margin: 0;
     padding-bottom: 1rem;
 }
 #my-lists{
+    position: relative;
+    left:70%;
     padding: .5rem;
     margin-bottom: .5rem;
+}
+form, footer{
+    color:black;
+    background-color: rgb(228, 239, 244);
 }
 #search{
     vertical-align: middle;
@@ -27,7 +32,10 @@ h1 {
     background-image: url('google_watermark.gif');
     background-repeat: no-repeat;
 }
-#search-by {
+#search:focus{
+    background-image: none;
+}
+#search-by,footer {
     padding:.5rem;
     border-bottom-style: none;
 }
@@ -35,25 +43,32 @@ h1 {
     padding-bottom: .5rem;
     border-top-style: none;
 }
+fieldset{
+    border-style: none;
+}
 .search-note{
     display: inline-block;
     margin-top: .5rem;
 }
 /* #btn-search,  */
 #result-count{
-    
+    text-align: center;
     margin: .5rem;
 }
-#btn-search{
+#btn-search,#prev, #next{
+    border-radius: 1rem;
+    padding: .5rem;
     vertical-align: middle;
+    /* color:rgb(228, 239, 244); */
+    background-color: rgb(192, 192, 192);
     /* display: block; */
     /* margin: .5rem auto; */
 }
 .thumbnail {
-    /* max-width: 100%; */
+    max-width: 100%;
     min-height: 20rem;
     max-height: 20rem;
-    min-width: 100%;
+    /* min-width: 100%; */
     /* width: auto; */
     /* padding: .5rem; */
 }
@@ -65,15 +80,17 @@ h1 {
     flex-flow: row nowrap;
     justify-content: center;
     gap: .5rem;
+    margin-bottom: 1rem;
 }
 /* :has is not firefox compatible yet, but it doesn't cause an issue, just displays normal instead of hide */
-.page-container:has(#pages:empty), #result-count:has(.total:empty){
+/* #result-count:has(.total:empty), */
+.page-container:has(#pages:empty){
     display: none;
 }
-#prev, #next {
+/* #prev, #next {
     cursor: pointer;
     align-self: center;
-}
+} */
 #pages {
     display: flex;
     flex-flow: row wrap;
@@ -86,8 +103,17 @@ h1 {
 }
 li {
     list-style-position: outside;
-    /* display: flex;
-    flex-flow: row wrap; */
+    background-color: rgb(228, 239, 244);
+    color: black;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+li:last-of-type{
+    margin-bottom: 0;
+}
+::marker{
+    color:white;
 }
 .container {
     display: flex;
@@ -114,18 +140,29 @@ li {
 .more-less {
     padding: 0;
     cursor: pointer;
-    color:blue;
+    color:cornflowerblue;
     text-decoration: underline;
     align-self: flex-end;
 }
+.page-links{
+    text-decoration: none;
+    color:rgb(43, 97, 199);
+}
 .current-page{
-    color:black;
+    color:rgb(100, 171, 237);
     text-decoration: none;
 }
 .information {
     max-width: 40rem;
     display: flex;
     flex-flow: column nowrap;
+}
+/* footer{
+    position: s;
+    bottom: -30vh;
+} */
+footer a:visited{
+    color:cadetblue
 }
 
 /* wanted to style first word to be bold, but it takes whole line, need to change------------------- */

@@ -3,6 +3,7 @@
     src: local('webfonts/Rubik_Iso/RubikIso-Regular.ttf');
 }
 body {
+    min-height: 100vh;
     font-size: 1.6rem;
     scroll-behavior: smooth;
     background-color: rgb(5, 5, 71);
@@ -90,6 +91,9 @@ fieldset{
 .page-container:has(#pages:empty){
     display: none;
 }
+/* .total{
+    visibility: hidden;
+} */
 #pages {
     display: flex;
     flex-flow: row wrap;
@@ -119,12 +123,15 @@ li:last-of-type{
     flex-flow: row wrap;
 }
 .read, .tbr, .delete {
-    border-radius: 40%;
+    cursor: pointer;
     padding: .5rem;
-    transition: background-color .1s ease-in-out;
+    transition: color .5s ease-in-out;
 }
-.read:active, .tbr:active, .delete:active {
-    background-color: red;
+.read:focus,.done{
+    color:red;
+}
+.tbr:focus,.want{
+    color:green;
 }
 .desc-short{
     margin: 0;
@@ -156,10 +163,6 @@ li:last-of-type{
     display: flex;
     flex-flow: column nowrap;
 }
-/* footer{
-    position: s;
-    bottom: -30vh;
-} */
 footer a:visited{
     color:cadetblue
 }

@@ -145,6 +145,9 @@ function getBooks(e, start = 0, max = 10){
                 let first  = li.attributes[0].value.split(' ')
                 //getting entire li element and all it's HTML
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
+                li.classList.add('done')
+                li.classList.remove('fa-regular')
+                li.classList.add('fa-solid')
                 //editing html if class counter is detected, and removing that class
                 // if(string.indexOf('class="counter"') > -1){
                 //     console.log('counter in element')
@@ -154,7 +157,7 @@ function getBooks(e, start = 0, max = 10){
                 //making array of indices of spans in html string
                 let spans = [...string.matchAll('span')]
                 //creating a class variable to add to delete icon being added to read and tbr elements
-                let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
+                let trashClasses = `${first[0]}` + ' delete fa-solid fa-trash-can'
                 //editing html string to have delete icon
                 string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
                 //getting or setting local storage to save book in read list
@@ -168,6 +171,9 @@ function getBooks(e, start = 0, max = 10){
             document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
                 let first  = li.attributes[0].value.split(' ')
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
+                li.classList.add('want')
+                li.classList.remove('fa-regular')
+                li.classList.add('fa-solid')
                 // if(string.indexOf('class="counter"') > -1){
                 //     console.log('counter in element')
                 //     let end = string.indexOf('id')
@@ -200,6 +206,7 @@ function getBooks(e, start = 0, max = 10){
                     link.innerText = '...more'
                 }
             }))
+            document.querySelector('form').reset()
             let pageLinks = 1
             for(i=0;i<total;i+=max){
                 let a = document.createElement('a')
@@ -219,10 +226,10 @@ function getBooks(e, start = 0, max = 10){
 document.querySelector('#next').addEventListener('click',next)
 function next(e){
     e ? e.preventDefault : ''
-    let total = document.querySelector('.total').innerText
+    let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
     //let start = +document.querySelector('.counter').value
     let start = +document.querySelector('ol').getAttribute('start')
-    console.log(start)
+    console.log('total:',total, start)
     //if you hit next at the end of the list, jumps to first page
     if(start+9 >= +total) start = 0-9
     if(document.querySelector('#my-lists').value !== 'my-lists'){
@@ -231,6 +238,7 @@ function next(e){
             left: 0, 
             behavior: 'smooth' 
            })
+        console.log(start)
         return getList(null, start+9)
     }else{
         return getBooks(null, start+9)}
@@ -239,7 +247,7 @@ function next(e){
 document.querySelector('#prev').addEventListener('click',previous)
 function previous(e){
     e ? e.preventDefault : ''
-    let total = document.querySelector('.total').innerText
+    let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
     //let start = +document.querySelector('.counter').value
     let start = +document.querySelector('ol').getAttribute('start')
     console.log(start)
@@ -263,9 +271,9 @@ function getList(e,start=0,max=10){
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('.page-links').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
-    let total = document.querySelector('.total')
     let value = document.querySelector('#my-lists').value
     let storage = JSON.parse(localStorage.getItem(`${value}`))
+    let total = storage.length
     if(!storage || storage.length === 0){
         return document.querySelector('#error').innerHTML = "You haven't saved any books yet!"
     }
@@ -363,8 +371,8 @@ function getList(e,start=0,max=10){
             link.innerText = '...more'
         }
     }))
-    // total.innerText = storage.length
-    document.querySelector('.search-power').innerText = `${storage.length} Google Books saved results from your ${value==='read'?'Read':'TBR'} list`
+    //document.querySelector('.total').innerText = total
+    document.querySelector('.search-power').innerText = `${total} Google Books saved results from your ${value==='read'?'Read':'TBR'} list`
     let pageLinks = 1
     for(i=0;i<storage.length;i+=max){
         let a = document.createElement('a')

@@ -159,83 +159,102 @@ function getBooks(e, start = 0, max = 10){
                 let first  = li.attributes[0].value.split(' ')
                 //getting entire li element and all it's HTML
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
+                //add read class done for styling
                 li.classList.add('done')
+                //change style of heart from regular(outline) to solid
                 li.classList.remove('fa-regular')
                 li.classList.add('fa-solid')
-                //editing html if class counter is detected, and removing that class
-                // if(string.indexOf('class="counter"') > -1){
-                //     console.log('counter in element')
-                //     let end = string.indexOf('id')
-                //     string = string.slice(0,4) + string.slice(end)
-                // }
                 //making array of indices of spans in html string
                 let spans = [...string.matchAll('span')]
-                //creating a class variable to add to delete icon being added to read and tbr elements
+                //creating a class variable to add to delete icon being added to read elements
                 let trashClasses = `${first[0]}` + ' delete fa-solid fa-trash-can'
                 //editing html string to have delete icon
                 string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
                 //getting or setting local storage to save book in read list
                 let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
-                //adding book to string gotten from local storage
+                //adding book to string taken from local storage
                 storage.push(string)
                 //setting localstorage with new book added to read list
                 localStorage.setItem('read', JSON.stringify(storage))
             }))
             //add event listener to bookmark icon to add tbr list on click
             document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
+                //get classes of list element holding icon
                 let first  = li.attributes[0].value.split(' ')
+                //get entire lie element html that has the icon
                 let string = document.querySelector(`li#${first[0]}`).outerHTML
+                //add tbr class want for styling
                 li.classList.add('want')
+                //change style of bookmark from regular(outline) to solid
                 li.classList.remove('fa-regular')
                 li.classList.add('fa-solid')
-                // if(string.indexOf('class="counter"') > -1){
-                //     console.log('counter in element')
-                //     let end = string.indexOf('id')
-                //     string = string.slice(0,4) + string.slice(end)
-                // }
+                //making array of indices of spans in html string
                 let spans = [...string.matchAll('span')]
+                //creating a class variable to add to delete icon being added to tbr elements
                 let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
-                // console.log(string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
+                //editing html string to have delete icon
                 string = string.slice(0, spans[3].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
-                //console.log(string)
+                //getting or setting local storage to save book in tbr list
                 let storage = localStorage.getItem('tbr') ? JSON.parse(localStorage.getItem('tbr')) : []
+                //adding book to string taken from local storage
                 storage.push(string)
+                //setting localstorage with new book added to tbr list
                 localStorage.setItem('tbr', JSON.stringify(storage))
             }))
+            //adding event listener to each more-less link created with long descriptions
             document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
+                //getting classes from list element with link
                 let first  = link.attributes[0].value.split(' ')
-                console.log(first)
+                //grabbing the description paragraph, whichi is sibling to link
                 let el = link.previousSibling
+                //checking if link has been clicked or not, is open or not, first check is if it has not been opened
                 if(link.innerText === '...more'){
+                    //add class to style to display all text
                     el.classList.add('desc-long')
-                    el.setAttribute('id','less')
+                    //adding href for target id to keep focus on book
                     link.setAttribute('href',`#${first[0]}`)
+                    //remove class for styling purposes
                     el.classList.remove('desc-short')
+                    //change innertext to change back to short display
                     link.innerText = 'less'
                 }else{
-                    el.removeAttribute('id')
-                    // link.removeAttribute('href')
+                    //add class for styling short display
                     el.classList.add('desc-short')
+                    //remove class to style for long display
                     el.classList.remove('desc-long')
+                    //change innertext back to more so folks know there's longer description
                     link.innerText = '...more'
                 }
             }))
+            //clears the text inside the input field
             document.querySelector('form').reset()
+            //starts counter for pages to link to at bottom of page
             let pageLinks = 1
+            //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
             for(i=0;i<total;i+=max){
+                //create an anchor element
                 let a = document.createElement('a')
+                //set href to access this function again with click
                 a.href = `javascript:getBooks(${null}, ${i})`
+                //set innertext to be the page number of results
                 a.innerText = `${pageLinks}`
+                //if page number corresponds to current page displaying, add class for styling
                 if(i === start){
                     a.classList.add('current-page')
                 }
+                //add class for styling all pages links
                 a.classList.add('page-links')
+                //increment pageLinks variable
                 pageLinks++
+                //add element to pages container element
                 document.querySelector('#pages').appendChild(a)
             }
         })
+        //catch for errors
         .catch(err => {
+            //clear padding bottom on body since no results to display
             document.querySelector('body').style.paddingBottom = '0'
+            //display error on page and in console
             document.querySelector('#error').innerText = `Error: ${err}`
             console.log(`Error: ${err}`)})
 }

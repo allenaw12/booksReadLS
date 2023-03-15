@@ -259,45 +259,60 @@ function getBooks(e, start = 0, max = 10){
             console.log(`Error: ${err}`)})
 }
 
+//add event listener on next button for results display page progression
 document.querySelector('#next').addEventListener('click',next)
+//function to run on next button press
 function next(e){
-    e ? e.preventDefault : ''
+    //prevent default behaviour
+    e?.preventDefault
+    //get total display results, either from total element or string when in lists (since an empty string is falsy, if total doesn't have anything it'll automatically jump to get the search-power element innertext)
     let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
-    //let start = +document.querySelector('.counter').value
+    //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
     let start = +document.querySelector('ol').getAttribute('start')
-    console.log('total:',total, start)
-    //if you hit next at the end of the list, jumps to first page
+    //if you hit next at the end of the list, math allows you to jump to first page
     if(start+9 >= +total) start = 0-9
+    //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
     if(document.querySelector('#my-lists').value !== 'my-lists'){
+        //smooth window scroll to top
         window.scroll({
             top: 0, 
             left: 0, 
             behavior: 'smooth' 
            })
-        console.log(start)
-        return getList(null, start+9)
+        //return getList function
+        return getList(e, start+9)
     }else{
+        //if not in lists, return getBooks function
         return getBooks(e, start+9)}
 }
 
+//add event listener on prev button for results display page progression
 document.querySelector('#prev').addEventListener('click',previous)
+//function to run on prev button press
 function previous(e){
-    e ? e.preventDefault : ''
+    //prevent default behaviour
+    e?.preventDefault
+    //get total display results, either from total element or string when in lists (since an empty string is falsy, if total doesn't have anything it'll automatically jump to get the search-power element innertext)
     let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
-    //let start = +document.querySelector('.counter').value
+    //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
     let start = +document.querySelector('ol').getAttribute('start')
     console.log(start)
+    //if you hit prev at beginning of list jumps to last page and end of results
     //total divided by number per page(10) rounded down, times number per page(10)
     //from first page if hit prev
     if(start-11 < 0) start = (Math.floor(total/10)*10)+11
+    //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
     if(document.querySelector('#my-lists').value !== 'my-lists'){
+        //smooth window scroll to top
         window.scroll({
             top: 0, 
             left: 0, 
             behavior: 'smooth' 
            })
+        //return getList function
         return getList(null, start-11)
     }else{
+        //if not in lists, return getBooks function
         return getBooks(null, start-11)}
 }
 

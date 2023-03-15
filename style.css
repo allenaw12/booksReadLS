@@ -3,11 +3,13 @@
     src: local('webfonts/Rubik_Iso/RubikIso-Regular.ttf');
 }
 body {
+    position: relative;
     min-height: 100vh;
     font-size: 1.6rem;
     scroll-behavior: smooth;
     background-color: rgb(5, 5, 71);
     color: rgb(228, 239, 244);
+    padding-bottom: 0;
 }
 header {
     padding: 1rem;
@@ -166,8 +168,12 @@ li:last-of-type{
 footer a:visited{
     color:cadetblue
 }
-
+footer{
+    position: absolute;
+    left:0;
+    bottom:0;
+}
 /* wanted to style first word to be bold, but it takes whole line, need to change------------------- */
-/* .descriptor {
+.descriptor {
     font-weight: bold;
-} */
+}

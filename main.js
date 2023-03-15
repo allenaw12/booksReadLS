@@ -2,18 +2,24 @@
 document.querySelector('form').addEventListener('submit', getBooks)
 //get books and create display cards
 function getBooks(e, start = 0, max = 10){
-    e ? e.preventDefault() : ''
+    e?.preventDefault()
     //search term
     let input = searchTerm = document.querySelector('#search').value
     //if nothing, don't ping the API!
-    if(input === ''){return document.querySelector('#error').innerText = 'Please type a query into search field.'}
+    if(input === '' && e.submitter)return document.querySelector('#error').innerText = 'Please type a query into search field.'
+    //unless you're just changing pages, then use this as input
+    if(input === '')input = searchTerm = document.querySelector('.search-power').innerText.slice(33,-3)
     //what want to search within, author, title etc
     let filter = document.querySelector('#choice').value
     //isbn search slightly different than precise othe searches
     filter === 'isbn' ? input : input = `"${input}"`
     //concatenate fetch for a search of both author and title
     if(filter.includes('-')){
+        //get input and split at comma
         let both = input.split(',')
+        //if someone doesn't use proper format to search this filter, display this message
+        if(both.length<2)return document.querySelector('#error').innerText = 'Please type a valid query into search field.'
+        //setting values to put into template literal for search url
         filter = 'author'
         input = `"${both[1].trim()}intitle:${both[0].trim()}"`
     }
@@ -24,8 +30,11 @@ function getBooks(e, start = 0, max = 10){
     document.querySelector('#error').innerText = ''
     document.querySelector('.total').innerText = ''
     document.querySelector('.search-power').innerText = ''
+    //adding padding on bottom for absolutely positioned footer
+    document.querySelector('body').style.paddingBottom = '9rem'
     //putting string of fetch site together
     let fetching = `https://www.googleapis.com/books/v1/volumes?q=${filter}:${input.includes(' ') ? input.split(' ').join('%20'):input}&startIndex=${start}&maxResults=${max}&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`
+    //this fetch string indicates specific info to send back, lowering data use
     // let fetching = `https://www.googleapis.com/books/v1/volumes?q=${filter}:${input.includes(' ') ? input.split(' ').join('%20'):input}&startIndex=${start}&maxResults=${max}&fields=totalItems,items(id,searchInfo(textSnippet),selfLink,volumeInfo(authors,categories,description,imageLinks,industryIdentifiers,pageCount,subtitle,title))&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`
     console.log(fetching)
     //fetch from API
@@ -41,10 +50,14 @@ function getBooks(e, start = 0, max = 10){
             document.querySelector('.total').innerText = total
             document.querySelector('.search-power').innerText = `Google Books search results for "${searchTerm}": `
             //error display for no results found
-            if(total === 0 || total === undefined) return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`:'No Results Found'
+            if(total === 0 || total === undefined){
+                //set padding to none since no items in body
+                document.querySelector('body').style.paddingBottom = '0'
+                return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`:'No Results Found'
+            }
             //create 'cards' to display books matching search
             data.items.forEach((obj,i)=> {
-                //declare/create elements to make card
+                //declare/create elements to make book card
                 let div = document.createElement('div')
                 let local = document.createElement('span')
                 let read = document.createElement('span')
@@ -53,17 +66,17 @@ function getBooks(e, start = 0, max = 10){
                 let img = document.createElement('img')
                 let li = document.createElement('li')
                 let art = document.createElement('article')
+                let titleD = document.createElement('span')
+                let authorD = document.createElement('span')
+                let genreD = document.createElement('span')
+                let descriptionD = document.createElement('span')
                 let title = document.createElement('span')
                 let author = document.createElement('span')
                 let genre = document.createElement('span')
                 let description = document.createElement('p')
                 let pages = document.createElement('span')
                 let isbn = document.createElement('span')
-                //setting counter so results list can be numerated
-                // if(i==0){
-                //     li.classList.add('counter')
-                //     li.value = start+1
-                // }
+                //let [local, read, tbr,title,author,genre,pages,isbn].forEach(el=>document.createElement())
                 //saving volume specific identifiers by iterating thru object
                 let texts = obj.volumeInfo.industryIdentifiers?.map(el => `${el.type}: ${el.identifier}`)
                 //link to JSON data for book = obj.selfLink
@@ -75,10 +88,11 @@ function getBooks(e, start = 0, max = 10){
                 console.log('buy/info',obj.volumeInfo?.canonicalVolumeLink,obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1)
                     //same as above, but has source in url that it's from google books api
                 console.log('buy/info',obj.volumeInfo?.infoLink)
+                    //JSON data for specific book
                 console.log(obj.selfLink)
                 //concatenating identifiers into single line to save/display
                 isbn.innerText = texts?.join(', ')
-                //declareing and adding classes to heart icon for read list and bookmark icon for tbr list
+                //declaring and adding classes to heart icon for read list and bookmark icon for tbr list
                 let readClasses = `id${obj.id}` + ' read fa-regular fa-heart'
                 let tbrClasses = `id${obj.id}` + ' tbr fa-regular fa-bookmark'
                 readClasses.split(' ').forEach(el => read.classList.add(el))
@@ -96,7 +110,7 @@ function getBooks(e, start = 0, max = 10){
                 link.href = `https://books.google.com/books?id=${obj.id}`
                 //open link in separate window
                 link.target = '_blank'
-                //adding classes
+                //adding classes to elements
                 art.classList.add('information')
                 img.classList.add('thumbnail')
                 description.classList.add('desc-short')
@@ -105,7 +119,7 @@ function getBooks(e, start = 0, max = 10){
                 //appending image and link elements to bigger book container
                 link.appendChild(img)
                 div.appendChild(link)
-                //setting title/author/genre/discription/pages display with what's provide, or none available
+                //setting title/author/genre/discription/pages innertext with what's provide, or none available
                 title.innerText = `Title: ${obj.volumeInfo.title || 'None provided'}${obj.volumeInfo.subtitle ? `: ${obj.volumeInfo.subtitle}` : ''}`
                 author.innerText = `Author(s): ${obj.volumeInfo.authors?.join(', ') || 'None provided'}`
                 genre.innerText = `Genre(s): ${obj.volumeInfo.categories?.join(', ') || 'None provided'}`
@@ -120,19 +134,19 @@ function getBooks(e, start = 0, max = 10){
                 //display partial description if over a certain length and not between a certain lengths(in case it's barely over)
                 //get length, put set height on box and overflow hidden, add more link element
                 //click event listener on more link, onclick change to less link, overflow visable and no set height
-                //reverse with less click   && description.innerText.length > 350
+                //reverse with less click && description.innerText.length > 350
                 if(description.innerText.length > 400 || (title.innerText.length > 85 && description.innerText.length > 375)){
-                    console.log('long description', description.innerText.length, 'title length', title.innerText.length)
+                    //console.log('long description', description.innerText.length, 'title length', title.innerText.length)
+                    //create more/less link element
                     let more = document.createElement('a')
+                    //set innerText
                     more.innerText = '...more'
+                    //add classes for styling
                     more.classList.add(`id${obj.id}`)
                     more.classList.add('more-less')
+                    //append to book card
                     art.appendChild(more)
-                }
-                //wanted to style first word to be bold, but it takes whole line, need to change-------------------
-                for(let child of art.children){
-                    child.classList.add('descriptor')
-                }
+                }                
                 //append text holding container to bigger book container and then that to the li and then to the ol!
                 div.appendChild(art)
                 li.appendChild(div)
@@ -220,7 +234,10 @@ function getBooks(e, start = 0, max = 10){
                 document.querySelector('#pages').appendChild(a)
             }
         })
-        .catch(err => console.log(`Error: ${err}`))
+        .catch(err => {
+            document.querySelector('body').style.paddingBottom = '0'
+            document.querySelector('#error').innerText = `Error: ${err}`
+            console.log(`Error: ${err}`)})
 }
 
 document.querySelector('#next').addEventListener('click',next)
@@ -241,7 +258,7 @@ function next(e){
         console.log(start)
         return getList(null, start+9)
     }else{
-        return getBooks(null, start+9)}
+        return getBooks(e, start+9)}
 }
 
 document.querySelector('#prev').addEventListener('click',previous)
@@ -268,6 +285,7 @@ function previous(e){
 document.querySelector('#my-lists').addEventListener('input', getList)
 function getList(e,start=0,max=10){
     e ? e.preventDefault : ''
+    document.querySelector('body').style.paddingBottom = '9rem'
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('.page-links').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
@@ -275,6 +293,7 @@ function getList(e,start=0,max=10){
     let storage = JSON.parse(localStorage.getItem(`${value}`))
     let total = storage.length
     if(!storage || storage.length === 0){
+        document.querySelector('body').style.paddingBottom = '0'
         return document.querySelector('#error').innerHTML = "You haven't saved any books yet!"
     }
     console.log(storage)

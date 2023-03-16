@@ -127,7 +127,10 @@ li:last-of-type{
 .read, .tbr, .delete {
     cursor: pointer;
     padding: .5rem;
-    transition: color .5s ease-in-out;
+    transition: color .5s ease-in-out, scale .5s ease-in-out;
+}
+.read:hover, .tbr:hover, .delete:hover {
+    scale: 1.2;
 }
 .read:focus,.done{
     color:red;

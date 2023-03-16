@@ -8,9 +8,11 @@ function getBooks(e, start = 0, max = 10){
     //if nothing, don't ping the API!
     if(input === '' && e.submitter)return document.querySelector('#error').innerText = 'Please type a query into search field.'
     //unless you're just changing pages, then use this as input
-    if(input === '')input = searchTerm = document.querySelector('.search-power').innerText.slice(33,-3)
-    //what want to search within, author, title etc
-    let filter = document.querySelector('#choice').value
+    if(input === '')input = searchTerm = document.querySelector('.search-power').innerText.split('"')[1]
+    //when switching pages, way to get search filter info (from previously loaded page display string)
+    let altFilter = document.querySelector('.search-power').innerText.split(' ')[5]
+    //what want to search within, author, title etc (depending what page or point of the search user is in it will pull from select input value or display string, it'll also slightly change depending on what filter was selected)
+    let filter = filterDisplay = e.submitter ? document.querySelector('#choice').value : altFilter !== 'subject' ? 'in'+altFilter : altFilter
     //isbn search slightly different than precise othe searches
     filter === 'isbn' ? input : input = `"${input}"`
     //concatenate fetch for a search of both author and title
@@ -48,7 +50,8 @@ function getBooks(e, start = 0, max = 10){
             console.log(data)
             //displaying total in DOM
             document.querySelector('.total').innerText = total
-            document.querySelector('.search-power').innerText = `Google Books search results for "${searchTerm}": `
+            //displaying a string with what was searched in what filter
+            document.querySelector('.search-power').innerText = `Google Books search results in ${filterDisplay !== 'isbn' &&filterDisplay!=='subject' ? filterDisplay.slice(2) : filterDisplay} for "${searchTerm}": `
             //error display for no results found
             if(total === 0 || total === undefined){
                 //set padding to none since no items in body
@@ -147,7 +150,7 @@ function getBooks(e, start = 0, max = 10){
                     //append to book card
                     art.appendChild(more)
                 }                
-                //append text holding container to bigger book container and then that to the li and then to the ol!
+                //append text holding container to bigger book container and then that to the li and then to the ol, also sets start attribute to ol so results are numbered correctly!
                 div.appendChild(art)
                 li.appendChild(div)
                 document.querySelector('ol').setAttribute('start', `${start+1}`)
@@ -316,127 +319,149 @@ function previous(e){
         return getBooks(null, start-11)}
 }
 
+//add event listener on list select element for saved read and tbr lists from localstorage, activated when input in select element is changed
 document.querySelector('#my-lists').addEventListener('input', getList)
+//function to run on select element change
 function getList(e,start=0,max=10){
-    e ? e.preventDefault : ''
-    document.querySelector('body').style.paddingBottom = '9rem'
+    //prevent default behaviour
+    e?.preventDefault
+    //remove any current search results/list results/errors from page
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('.page-links').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
+    //get select input value to know which list to pull from localstorage
     let value = document.querySelector('#my-lists').value
+    //get string from storage and parse into array of objects
     let storage = JSON.parse(localStorage.getItem(`${value}`))
+    //get length of storage(total items to display)
     let total = storage.length
+    //if no books have been saved to selected list
     if(!storage || storage.length === 0){
+        //remove padding needed for footer since no results displaying
         document.querySelector('body').style.paddingBottom = '0'
+        //let user know they have no books saved
         return document.querySelector('#error').innerHTML = "You haven't saved any books yet!"
     }
+    //since we know we have books, add that padding to the bottom for the footer
+    document.querySelector('body').style.paddingBottom = '9rem'
     console.log(storage)
+    //set page of list displays set to desired display results number from start number
     let pageDisplay = storage.slice(start, start+max)
+    //from number of results sliced out of storage array, for each creating book 'card'
     pageDisplay.forEach((book,i) => {
-        // if(book.indexOf('class="counter"') > -1){
-        //     console.log('counter in element')
-        //     let end = book.indexOf('id')
-            
-        //     console.log(book = book.slice(0,4) + book.slice(end))
-        // }else
-        // if(i===0){
-        //     console.log('add counter for list')
-        //     let classCounter = ` class="counter" value="${start+1}" `
-        //     //console.log(book.slice(0, 3) + classCounter + book.slice(4))
-        //     book = book.slice(0, 3) + classCounter + book.slice(4)
-        // }
-        //let spans = [...book.matchAll('delete')]
-        //let entry = book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6)
-        //console.log(book.slice(0, spans[0].index) + 'listDelete' + book.slice(spans[0].index+6))
+        //create variable for element to put results from localstorage books into
         let books = document.querySelector('.books')
-        // books.innerHTML ? books.innerHTML += entry : books.innerHTML=entry
+        //if it's already started, concatenate it, otherwise start it
         books.innerHTML ? books.innerHTML += book : books.innerHTML=book
     })
+    //add event listeners to all delete icons for either list type
     document.querySelectorAll('.delete').forEach(li => li.addEventListener('click',() => {
-        //console.log('I hear you want to delete')
+        //get list of classes from li elements and split by space into array
         let first  = li.attributes[0].value.split(' ')
+        //get html of li with that class of id just taken
         let string = document.querySelector(`li#${first[0]}`).outerHTML
         console.log(string)
+        //get from select element which list you are in
         let value = document.querySelector('#my-lists').value
-        // let first = li.attributes[0].value.split(' ')
-        // let string = document.querySelector(`li.${first[0]}`).outerHTML
-        // console.log(value, first, string)
-        //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
+        //get storage of proper list from given value
         let storage = JSON.parse(localStorage.getItem(`${value}`))
         console.log(storage.indexOf(string))
-        let newStore = storage.splice(storage.indexOf(string),1)
+        //using splice to delete the book from the storage string, deletes in place
+        storage.splice(storage.indexOf(string),1)
         console.log(storage)
+        //setting new localstorage with book deleted
         localStorage.setItem(`${value}`, JSON.stringify(storage))
+        //scrolling to top of window before reloading list
         window.scroll({
             top: 0, 
             left: 0, 
             behavior: 'smooth' 
            })
-        getList()
+        //call this function again to reload list
+        getList(e,start)
     }))
+    //adding event listeners to all read icons if they exist(thus the ?.)
     document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click',() => {
-        //console.log('you want to move to read!')
-        // let first  = li.attributes[0].value.split(' ')
-        // let string = document.querySelector(`li.${first[0]}`).outerHTML
-        // let spans = [...string.matchAll('span')]
-        // let trashClasses = `${first[0]}` + ' delete fa-regular fa-trash-can'
-        // console.log(string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5))
-        // string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
-        // let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
-        // storage.push(string)
-        // localStorage.setItem('read', JSON.stringify(storage))
+        //get classes of list element holding icon
         let first  = li.attributes[0].value.split(' ')
+        //getting entire li element and all it's HTML
         let string = document.querySelector(`li#${first[0]}`).outerHTML
-        //console.log(string)
+        //get from select element which list you are in
         let value = document.querySelector('#my-lists').value
-        // let first = li.attributes[0].value.split(' ')
-        // let string = document.querySelector(`li.${first[0]}`).outerHTML
-        // console.log(value, first, string)
-        //let storage = localStorage.getItem(`${value}`) ? JSON.parse(localStorage.getItem('tbr')) : []
+        //get storage of proper list from given value
         let storage = JSON.parse(localStorage.getItem(`${value}`))
         console.log(storage.indexOf(string))
+        ////using splice to delete the book from the storage string, deletes in place, but places removed item into newStore variable
         let newStore = storage.splice(storage.indexOf(string),1)
         console.log(storage)
+        //setting new localstorage with book deleted
         localStorage.setItem(`${value}`, JSON.stringify(storage))
+        //checking if read list already exists or creating it if it doesn't
         let otherStore = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+        //making array of span element indices
         let spans = [...newStore[0].matchAll('span')]
-        console.log(newStore[0].slice(0, spans[1].index-1)+ 'DONDE' +newStore[0].slice(spans[2].index+5))
+        //removing from newStore item the heart icon, since it'll be in the read list already
         newStore = newStore[0].slice(0, spans[1].index-1)+newStore[0].slice(spans[2].index+5)
+        //adding book from tbr to read localstorage string
         otherStore.push(newStore)
+        //setting new read list storage with new book added
         localStorage.setItem(`read`, JSON.stringify(otherStore))
+        //scroll to top of window with reload of list
         window.scroll({
             top: 0, 
             left: 0, 
             behavior: 'smooth' 
            })
-        getList()
+        getList(e, start)
     }))
+    //adding event listener to each more-less link created with long descriptions
     document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
+        //getting classes from list element with link
         let first  = link.attributes[0].value.split(' ')
+        //grabbing the description paragraph, which is sibling to link
         let el = link.previousSibling
+        //checking if link has been clicked or not, is open or not, first check is if it has not been opened
         if(link.innerText === '...more'){
+            //add class to style to display all text
             el.classList.add('desc-long')
+            //remove class for styling purposes
             el.classList.remove('desc-short')
+            //adding href for target id to keep focus on book
+            link.setAttribute('href',`#${first[0]}`)
+            //change innertext to change back to short display
             link.innerText = 'less'
         }else{
+            //add class for styling short display
             el.classList.add('desc-short')
+            //remove class to style for long display
             el.classList.remove('desc-long')
+            //change innertext back to more so folks know there's longer description
             link.innerText = '...more'
         }
     }))
-    //document.querySelector('.total').innerText = total
+    //displaying a string with what was searched in what filter
     document.querySelector('.search-power').innerText = `${total} Google Books saved results from your ${value==='read'?'Read':'TBR'} list`
+    //starts counter for pages to link to at bottom of page
     let pageLinks = 1
+    //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
     for(i=0;i<storage.length;i+=max){
+        //create an anchor element
         let a = document.createElement('a')
+        //set href to access this function again with click
         a.href = `javascript:getList(${null}, ${i})`
+        //set innertext to be the page number of results
         a.innerText = `${pageLinks}`
+        //if page number corresponds to current page displaying, add class for styling
         if(i === start){
             a.classList.add('current-page')
         }
+        //add class for styling all pages links
         a.classList.add('page-links')
+        //increment pageLinks variable
         pageLinks++
+        //add element to pages container element
         document.querySelector('#pages').appendChild(a)
     }
+    //sets start attribute to ol so results are numbered correctly
     document.querySelector('ol').setAttribute('start', `${start+1}`)
 }

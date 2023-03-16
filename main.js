@@ -2,11 +2,12 @@
 document.querySelector('form').addEventListener('submit', getBooks)
 //get books and create display cards
 function getBooks(e, start = 0, max = 10){
-    e?.preventDefault()
+    e ? e.preventDefault() : ''
+    console.log(e)
     //search term
     let input = searchTerm = document.querySelector('#search').value
     //if nothing, don't ping the API!
-    if(input === '' && e.submitter)return document.querySelector('#error').innerText = 'Please type a query into search field.'
+    if(e?.submitter && input === '')return document.querySelector('#error').innerText = 'Please type a query into search field.'
     //unless you're just changing pages, then use this as input
     if(input === '')input = searchTerm = document.querySelector('.search-power').innerText.split('"')[1]
     //when switching pages, way to get search filter info (from previously loaded page display string)
@@ -34,6 +35,12 @@ function getBooks(e, start = 0, max = 10){
     document.querySelector('.search-power').innerText = ''
     //adding padding on bottom for absolutely positioned footer
     document.querySelector('body').style.paddingBottom = '9rem'
+    //smooth window scroll to top
+    window.scroll({
+        top: 0, 
+        left: 0, 
+        behavior: 'smooth' 
+    })
     //putting string of fetch site together
     let fetching = `https://www.googleapis.com/books/v1/volumes?q=${filter}:${input.includes(' ') ? input.split(' ').join('%20'):input}&startIndex=${start}&maxResults=${max}&key=AIzaSyB8KFJLCXfinVWzxfnxcmyiT7f-XsmXd2Q`
     //this fetch string indicates specific info to send back, lowering data use
@@ -48,16 +55,16 @@ function getBooks(e, start = 0, max = 10){
             //total items found matching search
             let total = data.totalItems
             console.log(data)
-            //displaying total in DOM
-            document.querySelector('.total').innerText = total
-            //displaying a string with what was searched in what filter
-            document.querySelector('.search-power').innerText = `Google Books search results in ${filterDisplay !== 'isbn' &&filterDisplay!=='subject' ? filterDisplay.slice(2) : filterDisplay} for "${searchTerm}": `
             //error display for no results found
             if(total === 0 || total === undefined){
                 //set padding to none since no items in body
                 document.querySelector('body').style.paddingBottom = '0'
                 return document.querySelector('#error').innerText = data.error ? `Error code: ${data.error.code} Message: ${data.error.message}`:'No Results Found'
             }
+            //displaying total in DOM
+            document.querySelector('.total').innerText = total
+            //displaying a string with what was searched in what filter
+            document.querySelector('.search-power').innerText = `Google Books search result${total===1 ? '' : 's'} in ${filterDisplay !== 'isbn' &&filterDisplay!=='subject' ? filterDisplay.slice(2) : filterDisplay} for "${searchTerm}": `
             //create 'cards' to display books matching search
             data.items.forEach((obj,i)=> {
                 //declare/create elements to make book card
@@ -238,7 +245,7 @@ function getBooks(e, start = 0, max = 10){
                 //create an anchor element
                 let a = document.createElement('a')
                 //set href to access this function again with click
-                a.href = `javascript:getBooks(${null}, ${i})`
+                a.href = `javascript:getBooks('', ${i})`
                 //set innertext to be the page number of results
                 a.innerText = `${pageLinks}`
                 //if page number corresponds to current page displaying, add class for styling
@@ -276,12 +283,6 @@ function next(e){
     if(start+9 >= +total) start = 0-9
     //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
     if(document.querySelector('#my-lists').value !== 'my-lists'){
-        //smooth window scroll to top
-        window.scroll({
-            top: 0, 
-            left: 0, 
-            behavior: 'smooth' 
-           })
         //return getList function
         return getList(e, start+9)
     }else{
@@ -299,24 +300,17 @@ function previous(e){
     let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
     //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
     let start = +document.querySelector('ol').getAttribute('start')
-    console.log(start)
     //if you hit prev at beginning of list jumps to last page and end of results
     //total divided by number per page(10) rounded down, times number per page(10)
     //from first page if hit prev
     if(start-11 < 0) start = (Math.floor(total/10)*10)+11
     //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
     if(document.querySelector('#my-lists').value !== 'my-lists'){
-        //smooth window scroll to top
-        window.scroll({
-            top: 0, 
-            left: 0, 
-            behavior: 'smooth' 
-           })
         //return getList function
-        return getList(null, start-11)
+        return getList(e, start-11)
     }else{
         //if not in lists, return getBooks function
-        return getBooks(null, start-11)}
+        return getBooks(e, start-11)}
 }
 
 //add event listener on list select element for saved read and tbr lists from localstorage, activated when input in select element is changed
@@ -326,6 +320,7 @@ function getList(e,start=0,max=10){
     //prevent default behaviour
     e?.preventDefault
     //remove any current search results/list results/errors from page
+    document.querySelector('.total').innerText = ''
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('.page-links').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''
@@ -371,12 +366,6 @@ function getList(e,start=0,max=10){
         console.log(storage)
         //setting new localstorage with book deleted
         localStorage.setItem(`${value}`, JSON.stringify(storage))
-        //scrolling to top of window before reloading list
-        window.scroll({
-            top: 0, 
-            left: 0, 
-            behavior: 'smooth' 
-           })
         //call this function again to reload list
         getList(e,start)
     }))
@@ -406,12 +395,6 @@ function getList(e,start=0,max=10){
         otherStore.push(newStore)
         //setting new read list storage with new book added
         localStorage.setItem(`read`, JSON.stringify(otherStore))
-        //scroll to top of window with reload of list
-        window.scroll({
-            top: 0, 
-            left: 0, 
-            behavior: 'smooth' 
-           })
         getList(e, start)
     }))
     //adding event listener to each more-less link created with long descriptions
@@ -440,7 +423,7 @@ function getList(e,start=0,max=10){
         }
     }))
     //displaying a string with what was searched in what filter
-    document.querySelector('.search-power').innerText = `${total} Google Books saved results from your ${value==='read'?'Read':'TBR'} list`
+    document.querySelector('.search-power').innerText = `${total} Google Books saved result${total===1 ? '' : 's'} from your ${value==='read'?'Read':'TBR'} list`
     //starts counter for pages to link to at bottom of page
     let pageLinks = 1
     //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
@@ -448,7 +431,7 @@ function getList(e,start=0,max=10){
         //create an anchor element
         let a = document.createElement('a')
         //set href to access this function again with click
-        a.href = `javascript:getList(${null}, ${i})`
+        a.href = `javascript:getList('', ${i})`
         //set innertext to be the page number of results
         a.innerText = `${pageLinks}`
         //if page number corresponds to current page displaying, add class for styling
@@ -462,6 +445,12 @@ function getList(e,start=0,max=10){
         //add element to pages container element
         document.querySelector('#pages').appendChild(a)
     }
+    //smooth window scroll to top
+    window.scroll({
+        top: 0, 
+        left: 0, 
+        behavior: 'smooth' 
+        })
     //sets start attribute to ol so results are numbered correctly
     document.querySelector('ol').setAttribute('start', `${start+1}`)
 }

@@ -58,6 +58,11 @@ fieldset{
     text-align: center;
     margin: .5rem;
 }
+#pages-display{
+    display: block;
+    width: fit-content;
+    margin:0 auto;
+}
 #btn-search,#prev, #next{
     border-radius: 1rem;
     padding: .5rem;
@@ -89,8 +94,7 @@ fieldset{
     align-items: center;
 }
 /* :has is not firefox compatible yet, but it doesn't cause an issue, just displays normal instead of hide */
-/* #result-count:has(.total:empty), */
-.page-container:has(#pages:empty){
+.page-container:has(#pages:empty),#result-count:has(.search-power:empty){
     display: none;
 }
 /* .total{

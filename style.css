@@ -94,9 +94,9 @@ fieldset{
     align-items: center;
 }
 /* :has is not firefox compatible yet, but it doesn't cause an issue, just displays normal instead of hide */
-.page-container:has(#pages:empty),#result-count:has(.search-power:empty){
+/* .page-container:has(#pages:empty),#result-count:has(.search-power:empty){
     display: none;
-}
+} */
 /* .total{
     visibility: hidden;
 } */

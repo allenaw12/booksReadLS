@@ -1,15 +1,17 @@
 //fetch results from API with search button or enter key press
 document.querySelector('form').addEventListener('submit', getBooks)
 //get books and create display cards
-function getBooks(e, start = 0, max = 10){
+function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value){
     e ? e.preventDefault() : ''
     console.log(e)
     //search term
     let input = searchTerm = document.querySelector('#search').value
+    let alternate = document.querySelector('.search-power').innerText.split('"')[1]
+    console.log(alternate)
     //if nothing, don't ping the API!
-    if(e?.submitter && input === '')return document.querySelector('#error').innerText = 'Please type a query into search field.'
+    if((e?.submitter && input === '')||(e.type !== 'submit' && alternate === undefined))return document.querySelector('#error').innerText = 'Please type a query into search field.'
     //unless you're just changing pages, then use this as input
-    if(input === '')input = searchTerm = document.querySelector('.search-power').innerText.split('"')[1]
+    if(input === '') input = searchTerm = alternate
     //when switching pages, way to get search filter info (from previously loaded page display string)
     let altFilter = document.querySelector('.search-power').innerText.split(' ')[5]
     //what want to search within, author, title etc (depending what page or point of the search user is in it will pull from select input value or display string, it'll also slightly change depending on what filter was selected)
@@ -241,14 +243,15 @@ function getBooks(e, start = 0, max = 10){
             //starts counter for pages to link to at bottom of page
             let pageLinks = 1
             //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
-            for(i=0;i<total;i+=max){
+            for(i=0;i<total;i+=+max){
                 //create an anchor element
                 let a = document.createElement('a')
                 //set href to access this function again with click
-                a.href = `javascript:getBooks('', ${i})`
+                a.href = `javascript:getBooks('', ${i}, ${+max})`
                 //set innertext to be the page number of results
                 a.innerText = `${pageLinks}`
                 //if page number corresponds to current page displaying, add class for styling
+                console.log(i, start)
                 if(i === start){
                     a.classList.add('current-page')
                 }
@@ -269,25 +272,26 @@ function getBooks(e, start = 0, max = 10){
             console.log(`Error: ${err}`)})
 }
 
-//add event listener on next button for results display page progression
-document.querySelector('#next').addEventListener('click',next)
-//function to run on next button press
-function next(e){
-    //prevent default behaviour
+//add event listener to display different amounts per page
+document.querySelector('#maxPerPage').addEventListener('input', updatePageResults)
+//function to run on results per page change
+function updatePageResults(e){
     e?.preventDefault
-    //get total display results, either from total element or string when in lists (since an empty string is falsy, if total doesn't have anything it'll automatically jump to get the search-power element innertext)
-    let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
-    //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
+    console.log(e)
+    //get select input value to know how many results to display
+    let count = document.querySelector('#maxPerPage').value
     let start = +document.querySelector('ol').getAttribute('start')
-    //if you hit next at the end of the list, math allows you to jump to first page
-    if(start+9 >= +total) start = 0-9
-    //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
+    //if start is not divisible by new count....need to reload current page including current start, but recounting, so basically need new start, but how to decide what new start should be based on current start...
+    //if start is less than count => change start to 0
+    //if start is greater than count => divide start by count, round up => that's the new page it would appear on, but actually ROUND DOWN so you can multiply count by that number, that is new start number
+    start < count ? start = 0 : start = Math.floor(start/count)*count
     if(document.querySelector('#my-lists').value !== 'my-lists'){
-        //return getList function
-        return getList(e, start+9)
+        console.log('listing lots in a list!')
+        return getList(e,start,count)
     }else{
-        //if not in lists, return getBooks function
-        return getBooks(e, start+9)}
+        console.log('show more in a page!!')
+        return getBooks(e,start,count)
+    }
 }
 
 //add event listener on prev button for results display page progression
@@ -298,25 +302,48 @@ function previous(e){
     e?.preventDefault
     //get total display results, either from total element or string when in lists (since an empty string is falsy, if total doesn't have anything it'll automatically jump to get the search-power element innertext)
     let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
+    let max = +document.querySelector('#maxPerPage').value
     //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
     let start = +document.querySelector('ol').getAttribute('start')
     //if you hit prev at beginning of list jumps to last page and end of results
-    //total divided by number per page(10) rounded down, times number per page(10)
+    //need to divide total results by results to display per page, round down and multiply that by per page, that is start
     //from first page if hit prev
-    if(start-11 < 0) start = (Math.floor(total/10)*10)+11
+    // if(start === 0) start = Math.floor(total/max)*max
     //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
     if(document.querySelector('#my-lists').value !== 'my-lists'){
         //return getList function
-        return getList(e, start-11)
+        return getList(e, start === 1 ? start = Math.floor(total/max)*max : start=start-max-1,max)
     }else{
         //if not in lists, return getBooks function
-        return getBooks(e, start-11)}
+        return getBooks(e, start === 1 ? start = Math.floor(total/max)*max : start=start-max-1,max)}
+}
+
+//add event listener on next button for results display page progression
+document.querySelector('#next').addEventListener('click',next)
+//function to run on next button press
+function next(e){
+    //prevent default behaviour
+    e?.preventDefault
+    //get total display results, either from total element or string when in lists (since an empty string is falsy, if total doesn't have anything it'll automatically jump to get the search-power element innertext)
+    let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
+    //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
+    let start = +document.querySelector('ol').getAttribute('start')
+    let max = +document.querySelector('#maxPerPage').value
+    //if you hit next at the end of the list, math allows you to jump to first page
+    // if(start+max-1 >= +total) start = 0-max+1
+    //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
+    if(document.querySelector('#my-lists').value !== 'my-lists'){
+        //return getList function
+        return getList(e, start+max >= +total? start = 0 : start=start+max-1, max)
+    }else{
+        //if not in lists, return getBooks function
+        return getBooks(e, start+max >= +total? start = 0 : start=start+max-1, max)}
 }
 
 //add event listener on list select element for saved read and tbr lists from localstorage, activated when input in select element is changed
 document.querySelector('#my-lists').addEventListener('input', getList)
 //function to run on select element change
-function getList(e,start=0,max=10){
+function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
     //prevent default behaviour
     e?.preventDefault
     //remove any current search results/list results/errors from page
@@ -427,14 +454,15 @@ function getList(e,start=0,max=10){
     //starts counter for pages to link to at bottom of page
     let pageLinks = 1
     //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
-    for(i=0;i<storage.length;i+=max){
+    for(i=0;i<storage.length;i+=+max){
         //create an anchor element
         let a = document.createElement('a')
         //set href to access this function again with click
-        a.href = `javascript:getList('', ${i})`
+        a.href = `javascript:getList('', ${i},${+max})`
         //set innertext to be the page number of results
         a.innerText = `${pageLinks}`
         //if page number corresponds to current page displaying, add class for styling
+        console.log(i, start)
         if(i === start){
             a.classList.add('current-page')
         }

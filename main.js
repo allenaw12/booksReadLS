@@ -79,12 +79,16 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 let li = document.createElement('li')
                 let art = document.createElement('article')
                 let description = document.createElement('p')
+                
+                let makeDivs = [div,titleD,authorD,genreD,descriptionD,pagesD]
+                makeDivs.forEach(el => el=document.createElement())
                 let div = document.createElement('div')
                 let titleD = document.createElement('div')
                 let authorD = document.createElement('div')
                 let genreD = document.createElement('div')
                 let descriptionD = document.createElement('div')
                 let pagesD = document.createElement('div')
+
                 let local = document.createElement('span')
                 let read = document.createElement('span')
                 let tbr = document.createElement('span')

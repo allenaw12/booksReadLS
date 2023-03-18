@@ -3,7 +3,7 @@ document.querySelector('form').addEventListener('submit', getBooks)
 //get books and create display cards
 function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value){
     e?.preventDefault?.()
-    console.log(e)
+    //console.log(e)
     //search term
     let input = searchTerm = document.querySelector('#search').value
     let alternate = document.querySelector('.search-power').innerText.split('"')[1]
@@ -11,7 +11,7 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
     // if(document.querySelector('#my-lists').value !== 'my-lists' && input === ''){
     //     return getList()
     // }
-    console.log(alternate)
+    //console.log(alternate)
     //if nothing, don't ping the API!
     if((e?.submitter && input === '')||(e.type !== 'submit' && alternate === undefined))return document.querySelector('#error').innerText = 'Please type a query into search field.'
     //unless you're just changing pages, then use this as input
@@ -74,23 +74,23 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
             //create 'cards' to display books matching search
             data.items.forEach((obj,i)=> {
                 //declare/create elements to make book card
-                let div = document.createElement('div')
-                let local = document.createElement('span')
-                let read = document.createElement('span')
-                let tbr = document.createElement('span')
                 let link = document.createElement('a')
                 let img = document.createElement('img')
                 let li = document.createElement('li')
                 let art = document.createElement('article')
+                let description = document.createElement('p')
+                let div = document.createElement('div')
                 let titleD = document.createElement('div')
                 let authorD = document.createElement('div')
                 let genreD = document.createElement('div')
                 let descriptionD = document.createElement('div')
                 let pagesD = document.createElement('div')
+                let local = document.createElement('span')
+                let read = document.createElement('span')
+                let tbr = document.createElement('span')
                 let title = document.createElement('span')
                 let author = document.createElement('span')
                 let genre = document.createElement('span')
-                let description = document.createElement('p')
                 let pages = document.createElement('span')
                 let isbn = document.createElement('span')
                 //saving volume specific identifiers by iterating thru object
@@ -111,7 +111,6 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 local.appendChild(tbr)
                 //appending icons holder to bigger book container
                 div.appendChild(local)
-                
                 //switch info link from thumbnail to text that says More Info... or See More...
                 //creating link to book listing in API
                 link.href = obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1 ?`https://books.google.com/books?id=${obj.id}`:obj.volumeInfo?.canonicalVolumeLink
@@ -125,7 +124,6 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 //adding src to thumbnail image
                 img.src = obj.volumeInfo.imageLinks?.thumbnail ||  obj.volumeInfo.imageLinks?.smallThumbnail ||'NoBookCover.png'
                 //appending image and link elements to bigger book container
-                
                 div.appendChild(img)
                 //setting title/author/genre/discription/pages innertext with what's provide, or none available
                 title.innerText = `Title: ${obj.volumeInfo.title || 'None provided'}${obj.volumeInfo.subtitle ? `: ${obj.volumeInfo.subtitle}` : ''}`
@@ -145,20 +143,15 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                     el[1].appendChild(el[0])
                 })
                 //appending all elements in order desired to text container
-                //titleD.appendChild(title)
                 art.appendChild(titleD)
-                //authorD.appendChild(author)
                 art.appendChild(authorD)
-                //genreD.appendChild(genre)
                 art.appendChild(genreD)
-                //descriptionD.appendChild(description)
                 art.appendChild(descriptionD)
                 //display partial description if over a certain length and not between a certain lengths(in case it's barely over)
                 //get length, put set height on box and overflow hidden, add more link element
                 //click event listener on more link, onclick change to less link, overflow visable and no set height
                 //reverse with less click && description.innerText.length > 350
                 if(description.innerText.length > 400 || (title.innerText.length > 85 && description.innerText.length > 375)){
-                    //console.log('long description', description.innerText.length, 'title length', title.innerText.length)
                     //create more/less link element
                     let more = document.createElement('a')
                     //set innerText
@@ -170,16 +163,14 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                     //append to description div
                     descriptionD.appendChild(more)
                 }
-                //pagesD.appendChild(pages)
                 art.appendChild(pagesD)
                 art.appendChild(isbn)
-
                 //append text holding container to bigger book container and then that to the li and then to the ol, also sets start attribute to ol so results are numbered correctly!
                 div.appendChild(art)
                                 //conditional create preview link element with preview image
                 //link to preview or google books info = obj.volumeInfo.previewLink
-                    //if true, link goes to preview book page, if false goes to general book page
-                    console.log('preview',obj.volumeInfo?.previewLink, obj.volumeInfo?.previewLink.indexOf('printsec')>-1)
+                    // //if true, link goes to preview book page, if false goes to general book page
+                    // console.log('preview',obj.volumeInfo?.previewLink, obj.volumeInfo?.previewLink.indexOf('printsec')>-1)
                 if(obj.volumeInfo?.previewLink.indexOf('printsec')>-1){
                     let prevImg = document.createElement('img')
                     let link = document.createElement('a')
@@ -191,8 +182,8 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 }
                 //conditional purchase ebook link
                 //link to buy ebook or google books information = obj.volumeInfo.canonicalVolumeLink, obj.volumeInfo.infoLink
-                    //if true, can purchase on play store, link to that, if false, general book page
-                    console.log('buy/info',obj.volumeInfo?.canonicalVolumeLink,obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1)
+                    // //if true, can purchase on play store, link to that, if false, general book page
+                    // console.log('buy/info',obj.volumeInfo?.canonicalVolumeLink,obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1)
                 if(obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1){
                     let link = document.createElement('a')
                     link.href = obj.volumeInfo?.canonicalVolumeLink
@@ -297,7 +288,7 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 //set innertext to be the page number of results
                 a.innerText = `${pageLinks}`
                 //if page number corresponds to current page displaying, add class for styling
-                console.log(i, start)
+                //console.log(i, start)
                 if(i === start){
                     a.classList.add('current-page')
                 }
@@ -509,7 +500,7 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
         //set innertext to be the page number of results
         a.innerText = `${pageLinks}`
         //if page number corresponds to current page displaying, add class for styling
-        console.log(i, start)
+        //console.log(i, start)
         if(i === start){
             a.classList.add('current-page')
         }

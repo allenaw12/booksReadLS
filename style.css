@@ -80,6 +80,7 @@ fieldset{
     align-self: center;
 }
 .thumbnail {
+    padding: .5rem;
     max-width: 100%;
     min-height: 20rem;
     max-height: 20rem;
@@ -157,12 +158,15 @@ li:last-of-type{
     max-height: fit-content;
     overflow-y: visible;
 }
+.results-subheader {
+    font-weight: 700;
+}
 .more-less {
-    padding: 0;
+    display: block;
+    text-align: right;
     cursor: pointer;
     color:cornflowerblue;
     text-decoration: underline;
-    align-self: flex-end;
 }
 .page-links{
     text-decoration: none;

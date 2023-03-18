@@ -82,6 +82,11 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 let img = document.createElement('img')
                 let li = document.createElement('li')
                 let art = document.createElement('article')
+                let titleD = document.createElement('div')
+                let authorD = document.createElement('div')
+                let genreD = document.createElement('div')
+                let descriptionD = document.createElement('div')
+                let pagesD = document.createElement('div')
                 let title = document.createElement('span')
                 let author = document.createElement('span')
                 let genre = document.createElement('span')
@@ -128,11 +133,26 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 genre.innerText = `Genre(s): ${obj.volumeInfo.categories?.join(', ') || 'None provided'}`
                 description.innerText = `Description: ${obj.volumeInfo.description || obj.searchInfo?.textSnippet || 'None available'}`
                 pages.innerText = `Pagecount: ${obj.volumeInfo?.pageCount || 'Not available'}`
+                let heads = [[title,titleD],[author,authorD],[genre,genreD],[description,descriptionD],[pages,pagesD]]
+                heads.forEach(el=>{
+                    let span = document.createElement('span')
+                    let divide = el[0].innerText.split(':')
+                    span.innerText = divide[0] + ': '
+                    span.classList.add('results-subheader')
+                    let string = divide.slice(1)
+                    el[0].innerText = string.join(':')
+                    el[1].appendChild(span)
+                    el[1].appendChild(el[0])
+                })
                 //appending all elements in order desired to text container
-                art.appendChild(title)
-                art.appendChild(author)
-                art.appendChild(genre)
-                art.appendChild(description)
+                //titleD.appendChild(title)
+                art.appendChild(titleD)
+                //authorD.appendChild(author)
+                art.appendChild(authorD)
+                //genreD.appendChild(genre)
+                art.appendChild(genreD)
+                //descriptionD.appendChild(description)
+                art.appendChild(descriptionD)
                 //display partial description if over a certain length and not between a certain lengths(in case it's barely over)
                 //get length, put set height on box and overflow hidden, add more link element
                 //click event listener on more link, onclick change to less link, overflow visable and no set height
@@ -144,12 +164,14 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                     //set innerText
                     more.innerText = '...more'
                     //add classes for styling
-                    more.classList.add(`id${obj.id}`)
+                    titleD.setAttribute('id', `${obj.id}`)
+                    more.classList.add(`${obj.id}`)
                     more.classList.add('more-less')
-                    //append to book card
-                    art.appendChild(more)
+                    //append to description div
+                    descriptionD.appendChild(more)
                 }
-                art.appendChild(pages)
+                //pagesD.appendChild(pages)
+                art.appendChild(pagesD)
                 art.appendChild(isbn)
 
                 //append text holding container to bigger book container and then that to the li and then to the ol, also sets start attribute to ol so results are numbered correctly!

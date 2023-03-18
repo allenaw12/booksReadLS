@@ -2,11 +2,15 @@
 document.querySelector('form').addEventListener('submit', getBooks)
 //get books and create display cards
 function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value){
-    e ? e.preventDefault() : ''
+    e?.preventDefault?.()
     console.log(e)
     //search term
     let input = searchTerm = document.querySelector('#search').value
     let alternate = document.querySelector('.search-power').innerText.split('"')[1]
+    //thought on how to incorporate search of lists
+    // if(document.querySelector('#my-lists').value !== 'my-lists' && input === ''){
+    //     return getList()
+    // }
     console.log(alternate)
     //if nothing, don't ping the API!
     if((e?.submitter && input === '')||(e.type !== 'submit' && alternate === undefined))return document.querySelector('#error').innerText = 'Please type a query into search field.'
@@ -78,30 +82,14 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 let img = document.createElement('img')
                 let li = document.createElement('li')
                 let art = document.createElement('article')
-                let titleD = document.createElement('span')
-                let authorD = document.createElement('span')
-                let genreD = document.createElement('span')
-                let descriptionD = document.createElement('span')
                 let title = document.createElement('span')
                 let author = document.createElement('span')
                 let genre = document.createElement('span')
                 let description = document.createElement('p')
                 let pages = document.createElement('span')
                 let isbn = document.createElement('span')
-                //let [local, read, tbr,title,author,genre,pages,isbn].forEach(el=>document.createElement())
                 //saving volume specific identifiers by iterating thru object
                 let texts = obj.volumeInfo.industryIdentifiers?.map(el => `${el.type}: ${el.identifier}`)
-                //link to JSON data for book = obj.selfLink
-                //link to buy ebook or google books information = obj.volumeInfo.canonicalVolumeLink, obj.volumeInfo.infoLink
-                //link to preview or google books info = obj.volumeInfo.previewLink
-                    //if true, link goes to preview book page, if false goes to general book page
-                console.log('preview',obj.volumeInfo?.previewLink, obj.volumeInfo?.previewLink.indexOf('printsec')>-1)
-                    //if true, can purchase on play store, link to that, if false, general book page
-                console.log('buy/info',obj.volumeInfo?.canonicalVolumeLink,obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1)
-                    //same as above, but has source in url that it's from google books api
-                console.log('buy/info',obj.volumeInfo?.infoLink)
-                    //JSON data for specific book
-                console.log(obj.selfLink)
                 //concatenating identifiers into single line to save/display
                 isbn.innerText = texts?.join(', ')
                 //declaring and adding classes to heart icon for read list and bookmark icon for tbr list
@@ -118,10 +106,13 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 local.appendChild(tbr)
                 //appending icons holder to bigger book container
                 div.appendChild(local)
+                
+                //switch info link from thumbnail to text that says More Info... or See More...
                 //creating link to book listing in API
-                link.href = `https://books.google.com/books?id=${obj.id}`
+                link.href = obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1 ?`https://books.google.com/books?id=${obj.id}`:obj.volumeInfo?.canonicalVolumeLink
                 //open link in separate window
                 link.target = '_blank'
+                link.innerText = 'More info...'
                 //adding classes to elements
                 art.classList.add('information')
                 img.classList.add('thumbnail')
@@ -129,8 +120,8 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 //adding src to thumbnail image
                 img.src = obj.volumeInfo.imageLinks?.thumbnail ||  obj.volumeInfo.imageLinks?.smallThumbnail ||'NoBookCover.png'
                 //appending image and link elements to bigger book container
-                link.appendChild(img)
-                div.appendChild(link)
+                
+                div.appendChild(img)
                 //setting title/author/genre/discription/pages innertext with what's provide, or none available
                 title.innerText = `Title: ${obj.volumeInfo.title || 'None provided'}${obj.volumeInfo.subtitle ? `: ${obj.volumeInfo.subtitle}` : ''}`
                 author.innerText = `Author(s): ${obj.volumeInfo.authors?.join(', ') || 'None provided'}`
@@ -141,7 +132,6 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 art.appendChild(title)
                 art.appendChild(author)
                 art.appendChild(genre)
-                art.appendChild(pages)
                 art.appendChild(description)
                 //display partial description if over a certain length and not between a certain lengths(in case it's barely over)
                 //get length, put set height on box and overflow hidden, add more link element
@@ -158,15 +148,46 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                     more.classList.add('more-less')
                     //append to book card
                     art.appendChild(more)
-                }                
+                }
+                art.appendChild(pages)
+                art.appendChild(isbn)
+
                 //append text holding container to bigger book container and then that to the li and then to the ol, also sets start attribute to ol so results are numbered correctly!
                 div.appendChild(art)
+                                //conditional create preview link element with preview image
+                //link to preview or google books info = obj.volumeInfo.previewLink
+                    //if true, link goes to preview book page, if false goes to general book page
+                    console.log('preview',obj.volumeInfo?.previewLink, obj.volumeInfo?.previewLink.indexOf('printsec')>-1)
+                if(obj.volumeInfo?.previewLink.indexOf('printsec')>-1){
+                    let prevImg = document.createElement('img')
+                    let link = document.createElement('a')
+                    prevImg.src = 'gbs_preview_button1.png'
+                    link.href = obj.volumeInfo?.previewLink
+                    link.target = '_blank'
+                    link.appendChild(prevImg)
+                    div.appendChild(link)
+                }
+                //conditional purchase ebook link
+                //link to buy ebook or google books information = obj.volumeInfo.canonicalVolumeLink, obj.volumeInfo.infoLink
+                    //if true, can purchase on play store, link to that, if false, general book page
+                    console.log('buy/info',obj.volumeInfo?.canonicalVolumeLink,obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1)
+                if(obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1){
+                    let link = document.createElement('a')
+                    link.href = obj.volumeInfo?.canonicalVolumeLink
+                    link.target = '_blank'
+                    link.innerText = 'Buy EBook'
+                    div.appendChild(link)
+                }
+                div.appendChild(link)
                 li.appendChild(div)
                 document.querySelector('ol').setAttribute('start', `${start+1}`)
                 document.querySelector('ol').appendChild(li)
             })
             //adding event listener to read icons for click event
             document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
+                    //link to JSON data for book = obj.selfLink
+                    //JSON data for specific book
+                    //console.log(obj.selfLink)
                 //get classes of list element holding icon
                 let first  = li.attributes[0].value.split(' ')
                 //getting entire li element and all it's HTML
@@ -191,6 +212,9 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
             }))
             //add event listener to bookmark icon to add tbr list on click
             document.querySelectorAll('.tbr').forEach(li => li.addEventListener('click',() => {
+                    //link to JSON data for book = obj.selfLink
+                    //JSON data for specific book
+                    //console.log(obj.selfLink)
                 //get classes of list element holding icon
                 let first  = li.attributes[0].value.split(' ')
                 //get entire lie element html that has the icon
@@ -348,6 +372,7 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
     e?.preventDefault
     //remove any current search results/list results/errors from page
     document.querySelector('.total').innerText = ''
+    document.querySelector('.search-power').innerText = ''
     document.querySelectorAll('li').forEach(el => el.remove())
     document.querySelectorAll('.page-links').forEach(el => el.remove())
     document.querySelector('#error').innerText = ''

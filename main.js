@@ -281,27 +281,28 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
             //clears the text inside the input field
             document.querySelector('form').reset()
             //starts counter for pages to link to at bottom of page
-            let pageLinks = 1
-            //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
-            for(i=0;i<total;i+=+max){
-                //create an anchor element
-                let a = document.createElement('a')
-                //set href to access this function again with click
-                a.href = `javascript:getBooks('', ${i}, ${+max})`
-                //set innertext to be the page number of results
-                a.innerText = `${pageLinks}`
-                //if page number corresponds to current page displaying, add class for styling
-                //console.log(i, start)
-                if(i === start){
-                    a.classList.add('current-page')
-                }
-                //add class for styling all pages links
-                a.classList.add('page-links')
-                //increment pageLinks variable
-                pageLinks++
-                //add element to pages container element
-                document.querySelector('#pages').appendChild(a)
-            }
+            pagination(total,max,start)
+            // let pageLinks = 1
+            // //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
+            // for(i=0;i<total;i+=+max){
+            //     //create an anchor element
+            //     let a = document.createElement('a')
+            //     //set href to access this function again with click
+            //     a.href = `javascript:getBooks('', ${i}, ${+max})`
+            //     //set innertext to be the page number of results
+            //     a.innerText = `${pageLinks}`
+            //     //if page number corresponds to current page displaying, add class for styling
+            //     //console.log(i, start)
+            //     if(i === start){
+            //         a.classList.add('current-page')
+            //     }
+            //     //add class for styling all pages links
+            //     a.classList.add('page-links')
+            //     //increment pageLinks variable
+            //     pageLinks++
+            //     //add element to pages container element
+            //     document.querySelector('#pages').appendChild(a)
+            // }
         })
         //catch for errors
         .catch(err => {
@@ -399,7 +400,7 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
     //get length of storage(total items to display)
     let total = storage.length
     //if no books have been saved to selected list
-    if(!storage || storage.length === 0){
+    if(!storage || total === 0){
         //remove padding needed for footer since no results displaying
         document.querySelector('body').style.paddingBottom = '0'
         //let user know they have no books saved
@@ -494,27 +495,28 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
     //displaying a string with what was searched in what filter
     document.querySelector('.search-power').innerText = `${total} Google Books saved result${total===1 ? '' : 's'} from your ${value==='read'?'Read':'TBR'} list`
     //starts counter for pages to link to at bottom of page
-    let pageLinks = 1
-    //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
-    for(i=0;i<storage.length;i+=+max){
-        //create an anchor element
-        let a = document.createElement('a')
-        //set href to access this function again with click
-        a.href = `javascript:getList('', ${i},${+max})`
-        //set innertext to be the page number of results
-        a.innerText = `${pageLinks}`
-        //if page number corresponds to current page displaying, add class for styling
-        //console.log(i, start)
-        if(i === start){
-            a.classList.add('current-page')
-        }
-        //add class for styling all pages links
-        a.classList.add('page-links')
-        //increment pageLinks variable
-        pageLinks++
-        //add element to pages container element
-        document.querySelector('#pages').appendChild(a)
-    }
+    pagination(total,max,start,value)
+    // let pageLinks = 1
+    // //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
+    // for(i=0;i<total;i+=+max){
+    //     //create an anchor element
+    //     let a = document.createElement('a')
+    //     //set href to access this function again with click
+    //     a.href = `javascript:getList('', ${i},${+max})`
+    //     //set innertext to be the page number of results
+    //     a.innerText = `${pageLinks}`
+    //     //if page number corresponds to current page displaying, add class for styling
+    //     //console.log(i, start)
+    //     if(i === start){
+    //         a.classList.add('current-page')
+    //     }
+    //     //add class for styling all pages links
+    //     a.classList.add('page-links')
+    //     //increment pageLinks variable
+    //     pageLinks++
+    //     //add element to pages container element
+    //     document.querySelector('#pages').appendChild(a)
+    // }
     //smooth window scroll to top
     window.scroll({
         top: 0, 
@@ -611,91 +613,38 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
 // }))
 
 //----------------MORE LESS--------------
-
-//SINGLE MORE LESS
- function moreLessText(link){
-    console.log(link)
-    let first  = link.srcElement.attributes[0].value.split(' ')
-    let el = link.srcElement.previousSibling
-    if(link.srcElement.innerText === '...more'){
+function moreLessText(e){
+    e?.preventDefault
+    let link = e.srcElement
+    let first  = link.attributes[0].value.split(' ')
+    let el = link.previousSibling
+    if(link.innerText === '...more'){
         el.classList.add('desc-long')
         el.classList.remove('desc-short')
-        link.srcElement.setAttribute('href',`#${first[0]}`)
-        link.srcElement.innerText = 'less'
+        link.setAttribute('href',`#${first[0]}`)
+        link.innerText = 'less'
     }else{
         el.classList.add('desc-short')
         el.classList.remove('desc-long')
-        link.srcElement.innerText = '...more'
+        link.innerText = '...more'
     }
 }
 
 // //----------------PAGINATION----------------
-// //starts counter for pages to link to at bottom of page
-// let pageLinks = 1
-// //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
-// for(i=0;i<total;i+=+max){
-//     //create an anchor element
-//     let a = document.createElement('a')
-//     //set href to access this function again with click
-//     a.href = `javascript:getBooks('', ${i}, ${+max})`
-//     //set innertext to be the page number of results
-//     a.innerText = `${pageLinks}`
-//     //if page number corresponds to current page displaying, add class for styling
-//     //console.log(i, start)
-//     if(i === start){
-//         a.classList.add('current-page')
-//     }
-//     //add class for styling all pages links
-//     a.classList.add('page-links')
-//     //increment pageLinks variable
-//     pageLinks++
-//     //add element to pages container element
-//     document.querySelector('#pages').appendChild(a)
-// }
-// //starts counter for pages to link to at bottom of page
-// let pageLinks = 1
-// //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
-// for(i=0;i<storage.length;i+=+max){
-//     //create an anchor element
-//     let a = document.createElement('a')
-//     //set href to access this function again with click
-//     a.href = `javascript:getList('', ${i},${+max})`
-//     //set innertext to be the page number of results
-//     a.innerText = `${pageLinks}`
-//     //if page number corresponds to current page displaying, add class for styling
-//     //console.log(i, start)
-//     if(i === start){
-//         a.classList.add('current-page')
-//     }
-//     //add class for styling all pages links
-//     a.classList.add('page-links')
-//     //increment pageLinks variable
-//     pageLinks++
-//     //add element to pages container element
-//     document.querySelector('#pages').appendChild(a)
-// }
-
-// //SINGLE PAGINATION
-// let pageLinks = 1
-// //within both for loops....
-//     let a = document.createElement('a')
-//     //diff href set
-//     a.innerText = `${pageLinks}`
-//     if(i === start){
-//         a.classList.add('current-page')
-//     }
-//     a.classList.add('page-links')
-//     pageLinks++
-//     document.querySelector('#pages').appendChild(a)
-// //-FROM SEARCH GET BOOKS
-// for(i=0;i<total;i+=+max){
-//     //within line 1
-//     a.href = `javascript:getBooks('', ${i}, ${+max})`
-//     //within line 2
-// }
-// //-FROM LOCALSTORAGE GET LIST
-// for(i=0;i<storage.length;i+=+max){
-//     //within line 1
-//     a.href = `javascript:getList('', ${i},${+max})`
-//     //within line 2
-// }
+function pagination(total,max,start,value){
+    console.log(value)
+    let pageLinks = 1
+    //within both for loops....
+    for(i=0;i<total;i+=+max){
+        let a = document.createElement('a')
+        //diff href set
+        value ? a.href = `javascript:getList('', ${i},${+max})` : a.href = `javascript:getBooks('', ${i}, ${+max})`
+        a.innerText = `${pageLinks}`
+        if(i === start){
+            a.classList.add('current-page')
+        }
+        a.classList.add('page-links')
+        pageLinks++
+        document.querySelector('#pages').appendChild(a)
+    }
+}

@@ -70,7 +70,7 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
             //displaying total in DOM
             document.querySelector('.total').innerText = total
             //displaying a string with what was searched in what filter
-            document.querySelector('.search-power').innerText = `Google Books search result${total===1 ? '' : 's'} in ${filterDisplay !== 'isbn' &&filterDisplay!=='subject' ? filterDisplay.slice(2) : filterDisplay} for "${searchTerm}": `
+            document.querySelector('.search-power').innerText = `Google Books search result${total===1 ? '' : 's'} in ${filterDisplay !== 'isbn' &&filterDisplay !=='subject' ? filterDisplay.slice(2) : filterDisplay} for "${searchTerm}": `
             //create 'cards' to display books matching search
             data.items.forEach((obj,i)=> {
                 //declare/create elements to make book card
@@ -79,16 +79,12 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 let li = document.createElement('li')
                 let art = document.createElement('article')
                 let description = document.createElement('p')
-                
-                let makeDivs = [div,titleD,authorD,genreD,descriptionD,pagesD]
-                makeDivs.forEach(el => el=document.createElement())
                 let div = document.createElement('div')
                 let titleD = document.createElement('div')
                 let authorD = document.createElement('div')
                 let genreD = document.createElement('div')
                 let descriptionD = document.createElement('div')
                 let pagesD = document.createElement('div')
-
                 let local = document.createElement('span')
                 let read = document.createElement('span')
                 let tbr = document.createElement('span')
@@ -135,7 +131,9 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 genre.innerText = `Genre(s): ${obj.volumeInfo.categories?.join(', ') || 'None provided'}`
                 description.innerText = `Description: ${obj.volumeInfo.description || obj.searchInfo?.textSnippet || 'None available'}`
                 pages.innerText = `Pagecount: ${obj.volumeInfo?.pageCount || 'Not available'}`
+                //array literal to hold sections and their parent sections variable names
                 let heads = [[title,titleD],[author,authorD],[genre,genreD],[description,descriptionD],[pages,pagesD]]
+                //puts section header into new element and adds class to make it bold, and places into new element and puts new element into parent element for section plus the rest of the inner text from the original element
                 heads.forEach(el=>{
                     let span = document.createElement('span')
                     let divide = el[0].innerText.split(':')
@@ -255,30 +253,31 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 localStorage.setItem('tbr', JSON.stringify(storage))
             }))
             //adding event listener to each more-less link created with long descriptions
-            document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
-                //getting classes from list element with link
-                let first  = link.attributes[0].value.split(' ')
-                //grabbing the description paragraph, whichi is sibling to link
-                let el = link.previousSibling
-                //checking if link has been clicked or not, is open or not, first check is if it has not been opened
-                if(link.innerText === '...more'){
-                    //add class to style to display all text
-                    el.classList.add('desc-long')
-                    //adding href for target id to keep focus on book
-                    link.setAttribute('href',`#${first[0]}`)
-                    //remove class for styling purposes
-                    el.classList.remove('desc-short')
-                    //change innertext to change back to short display
-                    link.innerText = 'less'
-                }else{
-                    //add class for styling short display
-                    el.classList.add('desc-short')
-                    //remove class to style for long display
-                    el.classList.remove('desc-long')
-                    //change innertext back to more so folks know there's longer description
-                    link.innerText = '...more'
-                }
-            }))
+            // document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
+            //     //getting classes from list element with link
+            //     let first  = link.attributes[0].value.split(' ')
+            //     //grabbing the description paragraph, whichi is sibling to link
+            //     let el = link.previousSibling
+            //     //checking if link has been clicked or not, is open or not, first check is if it has not been opened
+            //     if(link.innerText === '...more'){
+            //         //add class to style to display all text
+            //         el.classList.add('desc-long')
+            //         //adding href for target id to keep focus on book
+            //         link.setAttribute('href',`#${first[0]}`)
+            //         //remove class for styling purposes
+            //         el.classList.remove('desc-short')
+            //         //change innertext to change back to short display
+            //         link.innerText = 'less'
+            //     }else{
+            //         //add class for styling short display
+            //         el.classList.add('desc-short')
+            //         //remove class to style for long display
+            //         el.classList.remove('desc-long')
+            //         //change innertext back to more so folks know there's longer description
+            //         link.innerText = '...more'
+            //     }
+            // }))
+            document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', moreLessText))
             //clears the text inside the input field
             document.querySelector('form').reset()
             //starts counter for pages to link to at bottom of page
@@ -467,30 +466,31 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
         getList(e, start)
     }))
     //adding event listener to each more-less link created with long descriptions
-    document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
-        //getting classes from list element with link
-        let first  = link.attributes[0].value.split(' ')
-        //grabbing the description paragraph, which is sibling to link
-        let el = link.previousSibling
-        //checking if link has been clicked or not, is open or not, first check is if it has not been opened
-        if(link.innerText === '...more'){
-            //add class to style to display all text
-            el.classList.add('desc-long')
-            //remove class for styling purposes
-            el.classList.remove('desc-short')
-            //adding href for target id to keep focus on book
-            link.setAttribute('href',`#${first[0]}`)
-            //change innertext to change back to short display
-            link.innerText = 'less'
-        }else{
-            //add class for styling short display
-            el.classList.add('desc-short')
-            //remove class to style for long display
-            el.classList.remove('desc-long')
-            //change innertext back to more so folks know there's longer description
-            link.innerText = '...more'
-        }
-    }))
+    // document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
+    //     //getting classes from list element with link
+    //     let first  = link.attributes[0].value.split(' ')
+    //     //grabbing the description paragraph, which is sibling to link
+    //     let el = link.previousSibling
+    //     //checking if link has been clicked or not, is open or not, first check is if it has not been opened
+    //     if(link.innerText === '...more'){
+    //         //add class to style to display all text
+    //         el.classList.add('desc-long')
+    //         //remove class for styling purposes
+    //         el.classList.remove('desc-short')
+    //         //adding href for target id to keep focus on book
+    //         link.setAttribute('href',`#${first[0]}`)
+    //         //change innertext to change back to short display
+    //         link.innerText = 'less'
+    //     }else{
+    //         //add class for styling short display
+    //         el.classList.add('desc-short')
+    //         //remove class to style for long display
+    //         el.classList.remove('desc-long')
+    //         //change innertext back to more so folks know there's longer description
+    //         link.innerText = '...more'
+    //     }
+    // }))
+    document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', moreLessText))
     //displaying a string with what was searched in what filter
     document.querySelector('.search-power').innerText = `${total} Google Books saved result${total===1 ? '' : 's'} from your ${value==='read'?'Read':'TBR'} list`
     //starts counter for pages to link to at bottom of page
@@ -524,3 +524,178 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
     //sets start attribute to ol so results are numbered correctly
     document.querySelector('ol').setAttribute('start', `${start+1}`)
 }
+
+
+// //-------READ-----------
+// //adding event listener to read icons for click event
+// document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
+//     //link to JSON data for book = obj.selfLink
+//     //JSON data for specific book
+//     //console.log(obj.selfLink)
+// //get classes of list element holding icon
+// let first  = li.attributes[0].value.split(' ')
+// //getting entire li element and all it's HTML
+// let string = document.querySelector(`li#${first[0]}`).outerHTML
+// //add read class done for styling
+// li.classList.add('done')
+// //change style of heart from regular(outline) to solid
+// li.classList.remove('fa-regular')
+// li.classList.add('fa-solid')
+// //making array of indices of spans in html string
+// let spans = [...string.matchAll('span')]
+// //creating a class variable to add to delete icon being added to read elements
+// let trashClasses = `${first[0]}` + ' delete fa-solid fa-trash-can'
+// //editing html string to have delete icon
+// string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
+// //getting or setting local storage to save book in read list
+// let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+// //adding book to string taken from local storage
+// storage.push(string)
+// //setting localstorage with new book added to read list
+// localStorage.setItem('read', JSON.stringify(storage))
+// }))
+// //adding event listeners to all read icons if they exist(thus the ?.)
+// document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click',() => {
+//     //get classes of list element holding icon
+//     let first  = li.attributes[0].value.split(' ')
+//     //getting entire li element and all it's HTML
+//     let string = document.querySelector(`li#${first[0]}`).outerHTML
+//     //get from select element which list you are in
+//     let value = document.querySelector('#my-lists').value
+//     //get storage of proper list from given value
+//     let storage = JSON.parse(localStorage.getItem(`${value}`))
+//     console.log(storage.indexOf(string))
+//     ////using splice to delete the book from the storage string, deletes in place, but places removed item into newStore variable
+//     let newStore = storage.splice(storage.indexOf(string),1)
+//     console.log(storage)
+//     //setting new localstorage with book deleted
+//     localStorage.setItem(`${value}`, JSON.stringify(storage))
+//     //checking if read list already exists or creating it if it doesn't
+//     let otherStore = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+//     //making array of span element indices
+//     let spans = [...newStore[0].matchAll('span')]
+//     //removing from newStore item the heart icon, since it'll be in the read list already
+//     newStore = newStore[0].slice(0, spans[1].index-1)+newStore[0].slice(spans[2].index+5)
+//     //adding book from tbr to read localstorage string
+//     otherStore.push(newStore)
+//     //setting new read list storage with new book added
+//     localStorage.setItem(`read`, JSON.stringify(otherStore))
+//     getList(e, start)
+// }))
+
+// //SINGLE READ
+// document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
+//     let first  = li.attributes[0].value.split(' ')
+//     let string = document.querySelector(`li#${first[0]}`).outerHTML
+//     //FROM GET BOOK FUNCTION ONLY
+//     li.classList.add('done')
+//     li.classList.remove('fa-regular')
+//     li.classList.add('fa-solid')
+//     let spans = [...string.matchAll('span')]
+//     let trashClasses = `${first[0]}` + ' delete fa-solid fa-trash-can'
+//     string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
+//     let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+//     storage.push(string)
+//     localStorage.setItem('read', JSON.stringify(storage))
+//     //FROM GET LIST MOVE FROM TBR FUNCTION ONLY
+//     let value = document.querySelector('#my-lists').value
+//     let storage = JSON.parse(localStorage.getItem(`${value}`))
+//     let newStore = storage.splice(storage.indexOf(string),1)
+//     localStorage.setItem(`${value}`, JSON.stringify(storage))
+//     let otherStore = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+//     let spans = [...newStore[0].matchAll('span')]
+//     newStore = newStore[0].slice(0, spans[1].index-1)+newStore[0].slice(spans[2].index+5)
+//     otherStore.push(newStore)
+//     localStorage.setItem(`read`, JSON.stringify(otherStore))
+//     getList(e, start)
+// }))
+
+//----------------MORE LESS--------------
+
+//SINGLE MORE LESS
+ function moreLessText(link){
+    console.log(link)
+    let first  = link.srcElement.attributes[0].value.split(' ')
+    let el = link.srcElement.previousSibling
+    if(link.srcElement.innerText === '...more'){
+        el.classList.add('desc-long')
+        el.classList.remove('desc-short')
+        link.srcElement.setAttribute('href',`#${first[0]}`)
+        link.srcElement.innerText = 'less'
+    }else{
+        el.classList.add('desc-short')
+        el.classList.remove('desc-long')
+        link.srcElement.innerText = '...more'
+    }
+}
+
+// //----------------PAGINATION----------------
+// //starts counter for pages to link to at bottom of page
+// let pageLinks = 1
+// //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
+// for(i=0;i<total;i+=+max){
+//     //create an anchor element
+//     let a = document.createElement('a')
+//     //set href to access this function again with click
+//     a.href = `javascript:getBooks('', ${i}, ${+max})`
+//     //set innertext to be the page number of results
+//     a.innerText = `${pageLinks}`
+//     //if page number corresponds to current page displaying, add class for styling
+//     //console.log(i, start)
+//     if(i === start){
+//         a.classList.add('current-page')
+//     }
+//     //add class for styling all pages links
+//     a.classList.add('page-links')
+//     //increment pageLinks variable
+//     pageLinks++
+//     //add element to pages container element
+//     document.querySelector('#pages').appendChild(a)
+// }
+// //starts counter for pages to link to at bottom of page
+// let pageLinks = 1
+// //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
+// for(i=0;i<storage.length;i+=+max){
+//     //create an anchor element
+//     let a = document.createElement('a')
+//     //set href to access this function again with click
+//     a.href = `javascript:getList('', ${i},${+max})`
+//     //set innertext to be the page number of results
+//     a.innerText = `${pageLinks}`
+//     //if page number corresponds to current page displaying, add class for styling
+//     //console.log(i, start)
+//     if(i === start){
+//         a.classList.add('current-page')
+//     }
+//     //add class for styling all pages links
+//     a.classList.add('page-links')
+//     //increment pageLinks variable
+//     pageLinks++
+//     //add element to pages container element
+//     document.querySelector('#pages').appendChild(a)
+// }
+
+// //SINGLE PAGINATION
+// let pageLinks = 1
+// //within both for loops....
+//     let a = document.createElement('a')
+//     //diff href set
+//     a.innerText = `${pageLinks}`
+//     if(i === start){
+//         a.classList.add('current-page')
+//     }
+//     a.classList.add('page-links')
+//     pageLinks++
+//     document.querySelector('#pages').appendChild(a)
+// //-FROM SEARCH GET BOOKS
+// for(i=0;i<total;i+=+max){
+//     //within line 1
+//     a.href = `javascript:getBooks('', ${i}, ${+max})`
+//     //within line 2
+// }
+// //-FROM LOCALSTORAGE GET LIST
+// for(i=0;i<storage.length;i+=+max){
+//     //within line 1
+//     a.href = `javascript:getList('', ${i},${+max})`
+//     //within line 2
+// }

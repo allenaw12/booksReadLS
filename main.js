@@ -3,7 +3,6 @@ document.querySelector('form').addEventListener('submit', getBooks)
 //get books and create display cards
 function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value){
     e?.preventDefault?.()
-    //console.log(e)
     //search term
     let input = searchTerm = document.querySelector('#search').value
     let alternate = document.querySelector('.search-power').innerText.split('"')[1]
@@ -11,7 +10,6 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
     // if(document.querySelector('#my-lists').value !== 'my-lists' && input === ''){
     //     return getList()
     // }
-    //console.log(alternate)
     //if nothing, don't ping the API!
     if((e?.submitter && input === '')||(e.type !== 'submit' && alternate === undefined))return document.querySelector('#error').innerText = 'Please type a query into search field.'
     //unless you're just changing pages, then use this as input
@@ -111,11 +109,11 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 local.appendChild(tbr)
                 //appending icons holder to bigger book container
                 div.appendChild(local)
-                //switch info link from thumbnail to text that says More Info... or See More...
                 //creating link to book listing in API
                 link.href = obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1 ?`https://books.google.com/books?id=${obj.id}`:obj.volumeInfo?.canonicalVolumeLink
                 //open link in separate window
                 link.target = '_blank'
+                //Google listing info link
                 link.innerText = 'More info...'
                 //adding classes to elements
                 art.classList.add('information')
@@ -169,10 +167,7 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 art.appendChild(isbn)
                 //append text holding container to bigger book container and then that to the li and then to the ol, also sets start attribute to ol so results are numbered correctly!
                 div.appendChild(art)
-                                //conditional create preview link element with preview image
-                //link to preview or google books info = obj.volumeInfo.previewLink
-                    // //if true, link goes to preview book page, if false goes to general book page
-                    // console.log('preview',obj.volumeInfo?.previewLink, obj.volumeInfo?.previewLink.indexOf('printsec')>-1)
+                //conditional create preview link element with preview image
                 if(obj.volumeInfo?.previewLink.indexOf('printsec')>-1){
                     let prevImg = document.createElement('img')
                     let link = document.createElement('a')
@@ -183,9 +178,6 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                     div.appendChild(link)
                 }
                 //conditional purchase ebook link
-                //link to buy ebook or google books information = obj.volumeInfo.canonicalVolumeLink, obj.volumeInfo.infoLink
-                    // //if true, can purchase on play store, link to that, if false, general book page
-                    // console.log('buy/info',obj.volumeInfo?.canonicalVolumeLink,obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1)
                 if(obj.volumeInfo?.canonicalVolumeLink.indexOf('play.google')>-1){
                     let link = document.createElement('a')
                     link.href = obj.volumeInfo?.canonicalVolumeLink
@@ -199,6 +191,7 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 document.querySelector('ol').appendChild(li)
             })
             //adding event listener to read icons for click event
+            document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click', readIconSet))
             document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
                     //link to JSON data for book = obj.selfLink
                     //JSON data for specific book
@@ -253,56 +246,12 @@ function getBooks(e, start = 0, max=+document.querySelector('#maxPerPage').value
                 localStorage.setItem('tbr', JSON.stringify(storage))
             }))
             //adding event listener to each more-less link created with long descriptions
-            // document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
-            //     //getting classes from list element with link
-            //     let first  = link.attributes[0].value.split(' ')
-            //     //grabbing the description paragraph, whichi is sibling to link
-            //     let el = link.previousSibling
-            //     //checking if link has been clicked or not, is open or not, first check is if it has not been opened
-            //     if(link.innerText === '...more'){
-            //         //add class to style to display all text
-            //         el.classList.add('desc-long')
-            //         //adding href for target id to keep focus on book
-            //         link.setAttribute('href',`#${first[0]}`)
-            //         //remove class for styling purposes
-            //         el.classList.remove('desc-short')
-            //         //change innertext to change back to short display
-            //         link.innerText = 'less'
-            //     }else{
-            //         //add class for styling short display
-            //         el.classList.add('desc-short')
-            //         //remove class to style for long display
-            //         el.classList.remove('desc-long')
-            //         //change innertext back to more so folks know there's longer description
-            //         link.innerText = '...more'
-            //     }
-            // }))
             document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', moreLessText))
             //clears the text inside the input field
             document.querySelector('form').reset()
             //starts counter for pages to link to at bottom of page
+            //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
             pagination(total,max,start)
-            // let pageLinks = 1
-            // //for loop to create page links, initializing at 0, while i is less than total results, and i increments by max (which is results shown per page)
-            // for(i=0;i<total;i+=+max){
-            //     //create an anchor element
-            //     let a = document.createElement('a')
-            //     //set href to access this function again with click
-            //     a.href = `javascript:getBooks('', ${i}, ${+max})`
-            //     //set innertext to be the page number of results
-            //     a.innerText = `${pageLinks}`
-            //     //if page number corresponds to current page displaying, add class for styling
-            //     //console.log(i, start)
-            //     if(i === start){
-            //         a.classList.add('current-page')
-            //     }
-            //     //add class for styling all pages links
-            //     a.classList.add('page-links')
-            //     //increment pageLinks variable
-            //     pageLinks++
-            //     //add element to pages container element
-            //     document.querySelector('#pages').appendChild(a)
-            // }
         })
         //catch for errors
         .catch(err => {
@@ -318,7 +267,6 @@ document.querySelector('#maxPerPage').addEventListener('input', updatePageResult
 //function to run on results per page change
 function updatePageResults(e){
     e?.preventDefault
-    console.log(e)
     //get select input value to know how many results to display
     let count = document.querySelector('#maxPerPage').value
     let start = +document.querySelector('ol').getAttribute('start')
@@ -342,7 +290,7 @@ function previous(e){
     //prevent default behaviour
     e?.preventDefault
     //get total display results, either from total element or string when in lists (since an empty string is falsy, if total doesn't have anything it'll automatically jump to get the search-power element innertext)
-    let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
+    let total = +document.querySelector('.total').innerText || +document.querySelector('.search-power').innerText.split(' ')[0]
     let max = +document.querySelector('#maxPerPage').value
     //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
     let start = +document.querySelector('ol').getAttribute('start')
@@ -353,10 +301,10 @@ function previous(e){
     //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
     if(document.querySelector('#my-lists').value !== 'my-lists'){
         //return getList function
-        return getList(e, start === 1 ? start = Math.floor(total/max)*max : start=start-max-1,max)
+        return getList(e, start === 1 && total%max===0 ? start = total-max : start === 1 ? start = Math.floor(total/max)*max : start=start-max-1,max)
     }else{
         //if not in lists, return getBooks function
-        return getBooks(e, start === 1 ? start = Math.floor(total/max)*max : start=start-max-1,max)}
+        return getBooks(e, start === 1 && total%max===0 ? start = total-max : start === 1 ? start = Math.floor(total/max)*max : start=start-max-1,max)}
 }
 
 //add event listener on next button for results display page progression
@@ -366,7 +314,7 @@ function next(e){
     //prevent default behaviour
     e?.preventDefault
     //get total display results, either from total element or string when in lists (since an empty string is falsy, if total doesn't have anything it'll automatically jump to get the search-power element innertext)
-    let total = document.querySelector('.total').innerText || document.querySelector('.search-power').innerText.split(' ')[0]
+    let total = +document.querySelector('.total').innerText || +document.querySelector('.search-power').innerText.split(' ')[0]
     //pulls value of start attribute from ol element, allows numbering of items to happen seamlessly
     let start = +document.querySelector('ol').getAttribute('start')
     let max = +document.querySelector('#maxPerPage').value
@@ -375,10 +323,11 @@ function next(e){
     //if you are in lists, since we aren't querying the api, run getList function and scroll to top of window
     if(document.querySelector('#my-lists').value !== 'my-lists'){
         //return getList function
-        return getList(e, start+max >= +total? start = 0 : start=start+max-1, max)
+        return getList(e, start+max > total ? start = 0 : start=start+max-1, max)
     }else{
         //if not in lists, return getBooks function
-        return getBooks(e, start+max >= +total? start = 0 : start=start+max-1, max)}
+        return getBooks(e, start+max >= total ? start = 0 : start=start+max-1, max)
+    }
 }
 
 //add event listener on list select element for saved read and tbr lists from localstorage, activated when input in select element is changed
@@ -439,6 +388,7 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
         getList(e,start)
     }))
     //adding event listeners to all read icons if they exist(thus the ?.)
+    document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click', readIconSet))
     document.querySelectorAll('.read')?.forEach(li => li.addEventListener('click',() => {
         //get classes of list element holding icon
         let first  = li.attributes[0].value.split(' ')
@@ -467,56 +417,12 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
         getList(e, start)
     }))
     //adding event listener to each more-less link created with long descriptions
-    // document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', () => {
-    //     //getting classes from list element with link
-    //     let first  = link.attributes[0].value.split(' ')
-    //     //grabbing the description paragraph, which is sibling to link
-    //     let el = link.previousSibling
-    //     //checking if link has been clicked or not, is open or not, first check is if it has not been opened
-    //     if(link.innerText === '...more'){
-    //         //add class to style to display all text
-    //         el.classList.add('desc-long')
-    //         //remove class for styling purposes
-    //         el.classList.remove('desc-short')
-    //         //adding href for target id to keep focus on book
-    //         link.setAttribute('href',`#${first[0]}`)
-    //         //change innertext to change back to short display
-    //         link.innerText = 'less'
-    //     }else{
-    //         //add class for styling short display
-    //         el.classList.add('desc-short')
-    //         //remove class to style for long display
-    //         el.classList.remove('desc-long')
-    //         //change innertext back to more so folks know there's longer description
-    //         link.innerText = '...more'
-    //     }
-    // }))
     document.querySelectorAll('.more-less').forEach(link => link.addEventListener('click', moreLessText))
     //displaying a string with what was searched in what filter
     document.querySelector('.search-power').innerText = `${total} Google Books saved result${total===1 ? '' : 's'} from your ${value==='read'?'Read':'TBR'} list`
     //starts counter for pages to link to at bottom of page
+    //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
     pagination(total,max,start,value)
-    // let pageLinks = 1
-    // //for loop to create page links, initializing at 0, while i is less than number in storage(storage.length), and i increments by max (which is results shown per page)
-    // for(i=0;i<total;i+=+max){
-    //     //create an anchor element
-    //     let a = document.createElement('a')
-    //     //set href to access this function again with click
-    //     a.href = `javascript:getList('', ${i},${+max})`
-    //     //set innertext to be the page number of results
-    //     a.innerText = `${pageLinks}`
-    //     //if page number corresponds to current page displaying, add class for styling
-    //     //console.log(i, start)
-    //     if(i === start){
-    //         a.classList.add('current-page')
-    //     }
-    //     //add class for styling all pages links
-    //     a.classList.add('page-links')
-    //     //increment pageLinks variable
-    //     pageLinks++
-    //     //add element to pages container element
-    //     document.querySelector('#pages').appendChild(a)
-    // }
     //smooth window scroll to top
     window.scroll({
         top: 0, 
@@ -585,32 +491,35 @@ function getList(e,start=0,max=+document.querySelector('#maxPerPage').value){
 //     getList(e, start)
 // }))
 
-// //SINGLE READ
-// document.querySelectorAll('.read').forEach(li => li.addEventListener('click',() => {
-//     let first  = li.attributes[0].value.split(' ')
-//     let string = document.querySelector(`li#${first[0]}`).outerHTML
-//     //FROM GET BOOK FUNCTION ONLY
-//     li.classList.add('done')
-//     li.classList.remove('fa-regular')
-//     li.classList.add('fa-solid')
-//     let spans = [...string.matchAll('span')]
-//     let trashClasses = `${first[0]}` + ' delete fa-solid fa-trash-can'
-//     string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
-//     let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
-//     storage.push(string)
-//     localStorage.setItem('read', JSON.stringify(storage))
-//     //FROM GET LIST MOVE FROM TBR FUNCTION ONLY
-//     let value = document.querySelector('#my-lists').value
-//     let storage = JSON.parse(localStorage.getItem(`${value}`))
-//     let newStore = storage.splice(storage.indexOf(string),1)
-//     localStorage.setItem(`${value}`, JSON.stringify(storage))
-//     let otherStore = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
-//     let spans = [...newStore[0].matchAll('span')]
-//     newStore = newStore[0].slice(0, spans[1].index-1)+newStore[0].slice(spans[2].index+5)
-//     otherStore.push(newStore)
-//     localStorage.setItem(`read`, JSON.stringify(otherStore))
-//     getList(e, start)
-// }))
+//SINGLE READ
+function readIconSet(e){
+    console.log(e)
+    // let first  = li.attributes[0].value.split(' ')
+    let first  = e.srcElement.attributes[0].value.split(' ')
+    let string = document.querySelector(`li#${first[0]}`).outerHTML
+    console.log(first, string)
+    //FROM GET BOOK FUNCTION ONLY
+    // li.classList.add('done')
+    // li.classList.remove('fa-regular')
+    // li.classList.add('fa-solid')
+    // let spans = [...string.matchAll('span')]
+    // let trashClasses = `${first[0]}` + ' delete fa-solid fa-trash-can'
+    // string = string.slice(0, spans[1].index-1)+`<span class="${trashClasses}"></span>`+string.slice(spans[4].index+5)
+    // let storage = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+    // storage.push(string)
+    // localStorage.setItem('read', JSON.stringify(storage))
+    // //FROM GET LIST MOVE FROM TBR FUNCTION ONLY
+    // let value = document.querySelector('#my-lists').value
+    // let storage = JSON.parse(localStorage.getItem(`${value}`))
+    // let newStore = storage.splice(storage.indexOf(string),1)
+    // localStorage.setItem(`${value}`, JSON.stringify(storage))
+    // let otherStore = localStorage.getItem('read') ? JSON.parse(localStorage.getItem('read')) : []
+    // let spans = [...newStore[0].matchAll('span')]
+    // newStore = newStore[0].slice(0, spans[1].index-1)+newStore[0].slice(spans[2].index+5)
+    // otherStore.push(newStore)
+    // localStorage.setItem(`read`, JSON.stringify(otherStore))
+    // getList(e, start)
+}
 
 //----------------MORE LESS--------------
 function moreLessText(e){
